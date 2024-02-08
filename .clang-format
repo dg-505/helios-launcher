@@ -1,0 +1,10 @@
+IndentWidth: 4
+BreakBeforeBraces: Allman
+PointerAlignment: Left
+AlwaysBreakTemplateDeclarations: Yes
+SpaceAfterTemplateKeyword: false
+ReflowComments: false
+NamespaceIndentation: All
+IndentAccessModifiers: true
+ColumnLimit: 0
+AllowShortFunctionsOnASingleLine: Empty
