@@ -6,9 +6,9 @@
 
 auto main(int argc, char* argv[]) -> int
 {
-    Q_INIT_RESOURCE(resources);
+    Q_INIT_RESOURCE(resources); // NOLINT
 
-    QApplication heliosGuiApp(argc, argv);
+    const QApplication heliosGuiApp(argc, argv);
 
     QTranslator translator(nullptr);
     const QStringList uiLanguages = QLocale::system().uiLanguages();

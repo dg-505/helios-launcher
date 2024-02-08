@@ -89,7 +89,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Helios base directory:</string>
+         <string>Helios++ base directory:</string>
         </property>
        </widget>
       </item>
@@ -220,5 +220,6 @@
  <resources>
   <include location="../res/resources.qrc"/>
  </resources>
+
  <connections/>
 </ui>

@@ -1,2 +1,4 @@
+#ifdef _WIN32
 #include <windows.h>
 IDI_ICON1 ICON "./heliospp.ico"
+#endif
