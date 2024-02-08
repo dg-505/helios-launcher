@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QSettings>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -19,10 +20,11 @@ public:
     auto operator=(const MainWindow&) -> MainWindow& = delete;
     auto operator=(MainWindow&&) -> MainWindow& = delete;
 
-    explicit MainWindow(QWidget* parent = nullptr);
+    explicit MainWindow(QSettings* settings, QWidget* parent = nullptr);
     ~MainWindow() override;
 
 private:
-    Ui::MainWindow *ui;
+    Ui::MainWindow* _ui;
+    QSettings* _settings;
 };
 #endif // MAINWINDOW_H

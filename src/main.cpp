@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QLocale>
+#include <QSettings>
 #include <QTranslator>
 
 auto main(int argc, char* argv[]) -> int
@@ -9,6 +10,8 @@ auto main(int argc, char* argv[]) -> int
     Q_INIT_RESOURCE(resources); // NOLINT
 
     const QApplication heliosGuiApp(argc, argv);
+
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "heliospp", "heliosGui");
 
     QTranslator translator(nullptr);
     const QStringList uiLanguages = QLocale::system().uiLanguages();
@@ -20,7 +23,7 @@ auto main(int argc, char* argv[]) -> int
             break;
         }
     }
-    MainWindow heliosGuiMainWindow;
+    MainWindow heliosGuiMainWindow(&settings);
     heliosGuiMainWindow.show();
     return QApplication::exec();
 }
