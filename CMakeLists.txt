@@ -18,18 +18,13 @@ include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/ui)
 
 set(app_icon_resource_windows "${CMAKE_CURRENT_SOURCE_DIR}/res/heliosGui.rc")
 
-set(PROJECT_SOURCES
-    ${app_icon_resource_windows}
-    include/mainwindow.h
-    src/main.cpp
-    src/mainwindow.cpp
-    ui/mainwindow.ui
-    res/resources.qrc
-    ${TS_FILES}
-)
-
 add_executable(heliosGui
-    ${PROJECT_SOURCES}
+        ${app_icon_resource_windows}
+        include/mainwindow.h include/help.h
+        src/main.cpp src/mainwindow.cpp src/help.cpp
+        ui/mainwindow.ui ui/help.ui
+        res/resources.qrc
+        ${TS_FILES}
 )
 
 qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
