@@ -1,4 +1,3 @@
-#include <QDebug>
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -84,13 +83,35 @@ MainWindow::MainWindow(QSettings* settings, QWidget* parent)
     QObject::connect(_ui->helpButton, &QPushButton::clicked, this, [this]()
                     {
 #ifdef _WIN32
-                        _process.start(_process.workingDirectory() + "/run/helios.exe", QStringList() << "--help");
+                        if (_settings->value("MODE/ExecMode").toString() == "default")
+                        {
+                            _process.start(_process.workingDirectory() + "/run/helios.exe", QStringList() << "--help");
+                        }
+                        else if (_settings->value("MODE/ExecMode").toString() == "helios.py")
+                        {
+                            _process.start("python", QStringList() << _process.workingDirectory() + "/run/helios.py" << "--help");
+                        }
+                        else
+                        {
+                            QCoreApplication::exit(EXIT_FAILURE);
+                        }
 #else
                         // Set LD_LIBRARY_PATH to <heliosBaseDir>/run
                         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
                         env.insert("LD_LIBRARY_PATH", _process.workingDirectory() + "/run");
                         _process.setProcessEnvironment(env);
-                        _process.start("run/helios", QStringList() << "--help");
+                        if (_settings->value("MODE/ExecMode").toString() == "default")
+                        {
+                            _process.start("run/helios", QStringList() << "--help");
+                        }
+                        else if (_settings->value("MODE/ExecMode").toString() == "helios.py")
+                        {
+                            _process.start("python3", QStringList() << "run/helios.py" << "--help");
+                        }
+                        else
+                        {
+                            QCoreApplication::exit(EXIT_FAILURE);
+                        }
 #endif
                     });
 
@@ -183,6 +204,7 @@ void MainWindow::writeExecModeToSettings()
     {
         _settings->setValue("MODE/ExecMode", "");
     }
+    this->updateCmd();
 }
 
 void MainWindow::updateCmd()
@@ -190,7 +212,16 @@ void MainWindow::updateCmd()
     _ui->cmdBrowser->clear();
 #ifdef _WIN32
     _ui->cmdBrowser->moveCursor(QTextCursor::End);
-    _ui->cmdBrowser->insertPlainText(_ui->heliosBaseDirLineEdit->text().replace("/", "\\") + ">" + "run\\helios " + _ui->surveyPathLineEdit->text() + " " + _ui->argsEditor->toPlainText().replace("\n", " "));
+    _ui->cmdBrowser->insertPlainText(_ui->heliosBaseDirLineEdit->text().replace("/", "\\") + ">");
+    if (_settings->value("MODE/ExecMode").toString() == "default")
+    {
+        _ui->cmdBrowser->insertPlainText("run\\helios ");
+    }
+    else if (_settings->value("MODE/ExecMode").toString() == "helios.py")
+    {
+        _ui->cmdBrowser->insertPlainText("python run\\helios.py ");
+    }
+    _ui->cmdBrowser->insertPlainText(_ui->surveyPathLineEdit->text() + " " + _ui->argsEditor->toPlainText().replace("\n", " "));
 #else
     QTextCharFormat fmt;
     fmt.setFontWeight(QFont::Bold);
@@ -209,7 +240,15 @@ void MainWindow::updateCmd()
     fmt.setForeground(Qt::white);
     fmt.setFontWeight(QFont::Normal);
     _ui->cmdBrowser->setCurrentCharFormat(fmt);
-    _ui->cmdBrowser->insertPlainText("$ run/helios " + _ui->surveyPathLineEdit->text() + " " + _ui->argsEditor->toPlainText().replace("\n", " "));
+    if (_settings->value("MODE/ExecMode").toString() == "default")
+    {
+        _ui->cmdBrowser->insertPlainText("$ run/helios ");
+    }
+    else if (_settings->value("MODE/ExecMode").toString() == "helios.py")
+    {
+        _ui->cmdBrowser->insertPlainText("$ python3 run/helios.py ");
+    }
+    _ui->cmdBrowser->insertPlainText(_ui->surveyPathLineEdit->text() + " " + _ui->argsEditor->toPlainText().replace("\n", " "));
 #endif
 }
 
@@ -217,6 +256,7 @@ void MainWindow::startHeliospp()
 {
     // Read survey path from surveyPathLineEdit and optional arguments from argsEditor
     auto options = QStringList() << _ui->surveyPathLineEdit->text() << _ui->argsEditor->toPlainText().split(QRegExp("[ \n]"));
+    options.removeAll("");
 
     // clear output
     if (!(options.contains("--help") || options.contains("-h") || options.contains("--version")))
@@ -224,13 +264,35 @@ void MainWindow::startHeliospp()
         _ui->outputBrowser->clear();
     }
 #ifdef _WIN32
-    _process.start(_process.workingDirectory() + "/run/helios.exe", options);
+    if (_settings->value("MODE/ExecMode").toString() == "default")
+    {
+        _process.start(_process.workingDirectory() + "/run/helios.exe", options);
+    }
+    else if (_settings->value("MODE/ExecMode").toString() == "helios.py")
+    {
+        _process.start("python", QStringList() << _process.workingDirectory() + "/run/helios.py" << options);
+    }
+    else
+    {
+        QCoreApplication::exit(EXIT_FAILURE);
+    }
 #else
     // Set LD_LIBRARY_PATH to <heliosBaseDir>/run
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     env.insert("LD_LIBRARY_PATH", _process.workingDirectory() + "/run");
     _process.setProcessEnvironment(env);
-    _process.start("run/helios", options);
+    if (_settings->value("MODE/ExecMode").toString() == "default")
+    {
+        _process.start("run/helios", options);
+    }
+    else if (_settings->value("MODE/ExecMode").toString() == "helios.py")
+    {
+        _process.start("python3", QStringList() << "run/helios.py" << options);
+    }
+    else
+    {
+        QCoreApplication::exit(EXIT_FAILURE);
+    }
 #endif
 }
 
@@ -243,7 +305,7 @@ void MainWindow::redirectStdout()
         help->show();
     }
     // when '--version': show version info in MessageBox
-    else if (_process.arguments().contains("--version"))
+    else if (_process.arguments().contains("--version") && !_ui->heliospyModeButton->isChecked())
     {
         auto msg = QString(_process.readAll());
         QMessageBox::information(this, "HELIOS++ version info", msg);
