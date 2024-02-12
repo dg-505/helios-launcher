@@ -27,8 +27,9 @@ public:
 public Q_SLOTS:
     void updateCmd();
     // write settings
-    void writeLastSurveyToSettings();
     void writeHeliosBaseDirToSettings();
+    void writeLastSurveyToSettings();
+    void writeExecModeToSettings();
     // Redirect console output of Helios++ to QTextBrowser
     void startHeliospp();
     void redirectStdout();

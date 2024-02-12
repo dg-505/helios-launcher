@@ -18,13 +18,17 @@ MainWindow::MainWindow(QSettings* settings, QWidget* parent)
     _ui->setupUi(this);
     this->setWindowIcon(QIcon(":/heliospp.png"));
 
-    // restore helios base directory, last survey.xml and optional arguments from settings
+    // restore helios base directory, last survey.xml, execution mode and optional arguments from settings
     _ui->heliosBaseDirLineEdit->setText(_settings->value("DIRS/HeliosBaseDir").toString());
     _ui->surveyPathLineEdit->setText(_settings->value("DIRS/LastSurvey").toString());
 #ifdef _WIN32
         _ui->heliosBaseDirLineEdit->setText(_ui->heliosBaseDirLineEdit->text().replace("/", "\\"));
         _ui->surveyPathLineEdit->setText(_ui->surveyPathLineEdit->text().replace("/", "\\"));
 #endif
+    _ui->defaultModeButton->setChecked(_settings->value("MODE/ExecMode").toString() == "default");
+    _ui->heliospyModeButton->setChecked(_settings->value("MODE/ExecMode").toString() == "helios.py");
+    QObject::connect(_ui->defaultModeButton, &QRadioButton::toggled, this, &MainWindow::writeExecModeToSettings);
+    QObject::connect(_ui->heliospyModeButton, &QRadioButton::toggled, this, &MainWindow::writeExecModeToSettings);
     auto numArgs = _settings->beginReadArray("ARGS");
     for (int i = 0; i < numArgs; i++)
     {
@@ -124,8 +128,9 @@ MainWindow::MainWindow(QSettings* settings, QWidget* parent)
 MainWindow::~MainWindow()
 {
     // save settings on close
-    writeHeliosBaseDirToSettings();
-    writeLastSurveyToSettings();
+    this->writeHeliosBaseDirToSettings();
+    this->writeLastSurveyToSettings();
+    this->writeExecModeToSettings();
     auto args = _ui->argsEditor->toPlainText().split(QRegExp("[\\s\n]+"));
     _settings->beginWriteArray("ARGS");
     for (int i = 0; i < args.size(); i++)
@@ -162,6 +167,22 @@ void MainWindow::writeLastSurveyToSettings()
         _ui->surveyPathLineEdit->setText(_ui->surveyPathLineEdit->text().replace(_settings->value("DIRS/HeliosBaseDir").toString(), "."));
     }
     _settings->setValue("DIRS/LastSurvey", _ui->surveyPathLineEdit->text());
+}
+
+void MainWindow::writeExecModeToSettings()
+{
+    if (_ui->defaultModeButton->isChecked())
+    {
+        _settings->setValue("MODE/ExecMode", "default");
+    }
+    else if (_ui->heliospyModeButton->isChecked())
+    {
+        _settings->setValue("MODE/ExecMode", "helios.py");
+    }
+    else
+    {
+        _settings->setValue("MODE/ExecMode", "");
+    }
 }
 
 void MainWindow::updateCmd()
@@ -242,7 +263,6 @@ void MainWindow::redirectStdout()
         _ui->outputBrowser->verticalScrollBar()->setValue(_ui->outputBrowser->verticalScrollBar()->maximum());
     }
 }
-
 
 void MainWindow::redirectStderr()
 {
