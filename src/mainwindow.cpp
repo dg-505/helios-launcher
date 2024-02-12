@@ -22,8 +22,8 @@ MainWindow::MainWindow(QSettings* settings, QWidget* parent)
     _ui->heliosBaseDirLineEdit->setText(_settings->value("DIRS/HeliosBaseDir").toString());
     _ui->surveyPathLineEdit->setText(_settings->value("DIRS/LastSurvey").toString());
 #ifdef _WIN32
-        _ui->heliosBaseDirLineEdit->setText(_ui->heliosBaseDirLineEdit->text().replace("/", "\\"));
-        _ui->surveyPathLineEdit->setText(_ui->surveyPathLineEdit->text().replace("/", "\\"));
+    _ui->heliosBaseDirLineEdit->setText(_ui->heliosBaseDirLineEdit->text().replace("/", "\\"));
+    _ui->surveyPathLineEdit->setText(_ui->surveyPathLineEdit->text().replace("/", "\\"));
 #endif
     _ui->defaultModeButton->setChecked(_settings->value("MODE/ExecMode").toString() == "default");
     _ui->heliospyModeButton->setChecked(_settings->value("MODE/ExecMode").toString() == "helios.py");
@@ -150,7 +150,7 @@ MainWindow::~MainWindow()
 void MainWindow::writeHeliosBaseDirToSettings()
 {
 #ifdef _WIN32
-        _ui->heliosBaseDirLineEdit->setText(_ui->heliosBaseDirLineEdit->text().replace("/", "\\"));
+    _ui->heliosBaseDirLineEdit->setText(_ui->heliosBaseDirLineEdit->text().replace("/", "\\"));
 #endif
     _settings->setValue("DIRS/HeliosBaseDir", _ui->heliosBaseDirLineEdit->text());
     _process.setWorkingDirectory(_ui->heliosBaseDirLineEdit->text());
