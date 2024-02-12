@@ -24,14 +24,16 @@ public:
     explicit MainWindow(QSettings* settings, QWidget* parent = nullptr);
     ~MainWindow() override;
 
+public Q_SLOTS:
+    void updateCmd();
+    // write settings
+    void writeLastSurveyToSettings();
+    void writeHeliosBaseDirToSettings();
     // Redirect console output of Helios++ to QTextBrowser
     void startHeliospp();
     void redirectStdout();
+    void redirectStderr();
     void exitHeliospp();
-
-public Q_SLOTS:
-    void writeLastSurveyToSettings();
-    void writeHeliosBaseDirToSettings();
 
 private:
     Ui::MainWindow* _ui;

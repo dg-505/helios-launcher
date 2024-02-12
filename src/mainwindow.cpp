@@ -21,6 +21,10 @@ MainWindow::MainWindow(QSettings* settings, QWidget* parent)
     // restore helios base directory, last survey.xml and optional arguments from settings
     _ui->heliosBaseDirLineEdit->setText(_settings->value("DIRS/HeliosBaseDir").toString());
     _ui->surveyPathLineEdit->setText(_settings->value("DIRS/LastSurvey").toString());
+#ifdef _WIN32
+        _ui->heliosBaseDirLineEdit->setText(_ui->heliosBaseDirLineEdit->text().replace("/", "\\"));
+        _ui->surveyPathLineEdit->setText(_ui->surveyPathLineEdit->text().replace("/", "\\"));
+#endif
     auto numArgs = _settings->beginReadArray("ARGS");
     for (int i = 0; i < numArgs; i++)
     {
@@ -33,6 +37,15 @@ MainWindow::MainWindow(QSettings* settings, QWidget* parent)
         _ui->argsEditor->moveCursor(QTextCursor::End);
     }
     _settings->endArray();
+
+    // fill command browser
+    _ui->cmdBrowser->setWordWrapMode(QTextOption::WrapAnywhere);
+    this->updateCmd();
+
+    // update command browser in real time when helios base directory, survey.xml or arguments change
+    QObject::connect(_ui->heliosBaseDirLineEdit, &QLineEdit::textChanged, this, &MainWindow::updateCmd);
+    QObject::connect(_ui->surveyPathLineEdit, &QLineEdit::textChanged, this, &MainWindow::updateCmd);
+    QObject::connect(_ui->argsEditor, &QPlainTextEdit::textChanged, this, &MainWindow::updateCmd);
 
     // set up process
     _process.setWorkingDirectory(_settings->value("DIRS/HeliosBaseDir").toString());
@@ -79,7 +92,8 @@ MainWindow::MainWindow(QSettings* settings, QWidget* parent)
 
     // Redirect console output of Helios++ to QTextBrowser
     QObject::connect(_ui->runButton, &QPushButton::clicked, this, &MainWindow::startHeliospp);
-    QObject::connect(&_process, &QProcess::readyRead, this, &MainWindow::redirectStdout);
+    QObject::connect(&_process, &QProcess::readyReadStandardOutput, this, &MainWindow::redirectStdout);
+    QObject::connect(&_process, &QProcess::readyReadStandardError, this, &MainWindow::redirectStderr);
     QObject::connect(&_process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &MainWindow::exitHeliospp);
 
     // Kill running Helioss++
@@ -95,7 +109,6 @@ MainWindow::MainWindow(QSettings* settings, QWidget* parent)
     QObject::connect(_ui->openOutputDirButton, &QPushButton::clicked, this, [this]()
                     {
                         const QUrl outputDirUrl = QUrl::fromLocalFile(_outputDir);
-                        qDebug() << outputDirUrl;
                         QDesktopServices::openUrl(outputDirUrl);
                     });
 
@@ -131,12 +144,18 @@ MainWindow::~MainWindow()
 
 void MainWindow::writeHeliosBaseDirToSettings()
 {
+#ifdef _WIN32
+        _ui->heliosBaseDirLineEdit->setText(_ui->heliosBaseDirLineEdit->text().replace("/", "\\"));
+#endif
     _settings->setValue("DIRS/HeliosBaseDir", _ui->heliosBaseDirLineEdit->text());
     _process.setWorkingDirectory(_ui->heliosBaseDirLineEdit->text());
 }
 
 void MainWindow::writeLastSurveyToSettings()
 {
+#ifdef _WIN32
+    _ui->surveyPathLineEdit->setText(_ui->surveyPathLineEdit->text().replace("/", "\\"));
+#endif
     // when survey.xml is within helios base directory, use relative path
     if (_ui->surveyPathLineEdit->text().startsWith(_settings->value("DIRS/HeliosBaseDir").toString()))
     {
@@ -145,11 +164,37 @@ void MainWindow::writeLastSurveyToSettings()
     _settings->setValue("DIRS/LastSurvey", _ui->surveyPathLineEdit->text());
 }
 
+void MainWindow::updateCmd()
+{
+    _ui->cmdBrowser->clear();
+#ifdef _WIN32
+    _ui->cmdBrowser->moveCursor(QTextCursor::End);
+    _ui->cmdBrowser->insertPlainText(_ui->heliosBaseDirLineEdit->text().replace("/", "\\") + ">" + "run\\helios " + _ui->surveyPathLineEdit->text() + " " + _ui->argsEditor->toPlainText().replace("\n", " "));
+#else
+    QTextCharFormat fmt;
+    fmt.setFontWeight(QFont::Bold);
+    fmt.setForeground(Qt::green);
+    _ui->cmdBrowser->moveCursor(QTextCursor::End);
+    _ui->cmdBrowser->setCurrentCharFormat(fmt);
+    _ui->cmdBrowser->insertPlainText(qgetenv("USERNAME") + "@" + QSysInfo::machineHostName());
+    _ui->cmdBrowser->moveCursor(QTextCursor::End);
+    fmt.setForeground(Qt::white);
+    _ui->cmdBrowser->setCurrentCharFormat(fmt);
+    _ui->cmdBrowser->insertPlainText(":");
+    _ui->cmdBrowser->moveCursor(QTextCursor::End);
+    fmt.setForeground(Qt::cyan);
+    _ui->cmdBrowser->setCurrentCharFormat(fmt);
+    _ui->cmdBrowser->insertPlainText(_ui->heliosBaseDirLineEdit->text());
+    fmt.setForeground(Qt::white);
+    fmt.setFontWeight(QFont::Normal);
+    _ui->cmdBrowser->setCurrentCharFormat(fmt);
+    _ui->cmdBrowser->insertPlainText("$ run/helios " + _ui->surveyPathLineEdit->text() + " " + _ui->argsEditor->toPlainText().replace("\n", " "));
+#endif
+}
+
 void MainWindow::startHeliospp()
 {
-    // Read helios base directory from heliosBaseDirLineEdit
-    auto heliosBaseDir = _ui->heliosBaseDirLineEdit->text();
-    // Read survey from surveyPathLineEdit and optional arguments from argsEditor
+    // Read survey path from surveyPathLineEdit and optional arguments from argsEditor
     auto options = QStringList() << _ui->surveyPathLineEdit->text() << _ui->argsEditor->toPlainText().split(QRegExp("[ \n]"));
 
     // clear output
@@ -158,16 +203,8 @@ void MainWindow::startHeliospp()
         _ui->outputBrowser->clear();
     }
 #ifdef _WIN32
-    if (!(options.contains("--help") || options.contains("-h") || options.contains("--version")))
-    {
-        _ui->outputBrowser->append(heliosBaseDir + ">run/helios.exe " + options.join(" "));
-    }
     _process.start(_process.workingDirectory() + "/run/helios.exe", options);
 #else
-    if (!(options.contains("--help") || options.contains("-h") || options.contains("--version")))
-    {
-        _ui->outputBrowser->append(qgetenv("USERNAME") + "@" + QSysInfo::machineHostName() + ":" + heliosBaseDir + "$ run/helios " + options.join(" "));
-    }
     // Set LD_LIBRARY_PATH to <heliosBaseDir>/run
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     env.insert("LD_LIBRARY_PATH", _process.workingDirectory() + "/run");
@@ -194,8 +231,30 @@ void MainWindow::redirectStdout()
     else
     {
         // Append new output to QTextBrowser
-        _ui->outputBrowser->append(_process.readAll());
+        _ui->cmdBrowser->moveCursor(QTextCursor::End);
+        QTextCharFormat fmt;
+        fmt.setForeground(Qt::black);
+        _ui->outputBrowser->setCurrentCharFormat(fmt);
+        _ui->outputBrowser->insertPlainText(_process.readAllStandardOutput());
+        _ui->cmdBrowser->moveCursor(QTextCursor::End);
+        _ui->outputBrowser->update();
+        // scroll down
+        _ui->outputBrowser->verticalScrollBar()->setValue(_ui->outputBrowser->verticalScrollBar()->maximum());
     }
+}
+
+
+void MainWindow::redirectStderr()
+{
+    _ui->cmdBrowser->moveCursor(QTextCursor::End);
+    QTextCharFormat fmt;
+    fmt.setForeground(Qt::red);
+    _ui->outputBrowser->setCurrentCharFormat(fmt);
+    _ui->outputBrowser->append(_process.readAllStandardError());
+    _ui->cmdBrowser->moveCursor(QTextCursor::End);
+    _ui->outputBrowser->update();
+    // scroll down
+    _ui->outputBrowser->verticalScrollBar()->setValue(_ui->outputBrowser->verticalScrollBar()->maximum());
 }
 
 void MainWindow::exitHeliospp()
@@ -205,14 +264,18 @@ void MainWindow::exitHeliospp()
         auto exitCode = _process.exitCode();
         if (exitCode == 0)
         {
-            _ui->outputBrowser->append("Helios++ exited successfully\n");
+            _ui->outputBrowser->append("HELIOS++ exited successfully\n");
             // Extract output directory from Helios++ output
             QString relOutDir;
             for (auto& line : _ui->outputBrowser->toPlainText().split("\n"))
             {
-                if (line.startsWith("Output directory: \"output//"))
+                if (line.startsWith("Output directory: \"output/"))
                 {
+#ifdef _WIN32
+                    relOutDir = line.split("/\\").at(1).left(line.split("/\\").at(1).length() - 1);
+#else
                     relOutDir = line.split("//").at(1).left(line.split("//").at(1).length() - 1);
+#endif
                     _outputDir = _settings->value("DIRS/HeliosBaseDir").toString() + "/output/" + relOutDir;
                     break;
                 }
@@ -220,7 +283,12 @@ void MainWindow::exitHeliospp()
         }
         else
         {
-            _ui->outputBrowser->append("Helios++ terminated with exit code " + QString::number(_process.exitCode()) + "\n");
+            QTextCharFormat fmt;
+            fmt.setForeground(Qt::red);
+            _ui->outputBrowser->setCurrentCharFormat(fmt);
+            _ui->outputBrowser->append("HELIOS++ terminated with exit code " + QString::number(_process.exitCode()) + "\n");
+            fmt.setForeground(Qt::black);
+            _ui->outputBrowser->setCurrentCharFormat(fmt);
         }
         _ui->outputBrowser->verticalScrollBar()->setValue(_ui->outputBrowser->verticalScrollBar()->maximum());
     }
