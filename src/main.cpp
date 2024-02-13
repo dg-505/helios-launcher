@@ -3,18 +3,18 @@
 #include <QSettings>
 #include <QTranslator>
 
-#include "mainwindow.h"
+#include "launcher.h"
 
 auto main(int argc, char* argv[]) -> int
 {
     Q_INIT_RESOURCE(resources); // NOLINT
 
-    const QApplication heliosGuiApp(argc, argv);
+    const QApplication launcherApp(argc, argv);
 
     // settings to preserve between sessions
-    // default location on Linux: ~/.config/heliospp/heliosGui.ini
-    // default location on Windows: C:\Users\<username>\AppData\Roaming\heliospp\heliosGui.ini
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "heliospp", "heliosGui");
+    // default location on Linux: ~/.config/heliospp/helios-launcher.ini
+    // default location on Windows: C:\Users\<username>\AppData\Roaming\heliospp\helios-launcher.ini
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "heliospp", "helios-launcher");
 
     // possible later: add support for translations
     QTranslator translator(nullptr);
@@ -27,7 +27,7 @@ auto main(int argc, char* argv[]) -> int
             break;
         }
     }
-    MainWindow heliosGuiMainWindow(&settings);
-    heliosGuiMainWindow.show();
+    Launcher launcher(&settings);
+    launcher.show();
     return QApplication::exec();
 }

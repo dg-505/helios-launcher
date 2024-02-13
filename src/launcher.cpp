@@ -3,13 +3,13 @@
 #include <QMessageBox>
 #include <QScrollBar>
 
-#include "../ui/ui_mainwindow.h"
+#include "../ui/ui_launcher.h"
 #include "help.h"
-#include "mainwindow.h"
+#include "launcher.h"
 
-MainWindow::MainWindow(QSettings* settings, QWidget* parent)
+Launcher::Launcher(QSettings* settings, QWidget* parent)
     : QMainWindow(parent),
-      _ui(new Ui::MainWindow),
+      _ui(new Ui::Launcher),
       _settings(settings),
       _process(new QProcess(this)),
       _outputDir(_settings->value("DIRS/HeliosBaseDir").toString() + "/output")
@@ -26,8 +26,8 @@ MainWindow::MainWindow(QSettings* settings, QWidget* parent)
 #endif
     _ui->defaultModeButton->setChecked(_settings->value("MODE/ExecMode").toString() == "default");
     _ui->heliospyModeButton->setChecked(_settings->value("MODE/ExecMode").toString() == "helios.py");
-    QObject::connect(_ui->defaultModeButton, &QRadioButton::toggled, this, &MainWindow::writeExecModeToSettings);
-    QObject::connect(_ui->heliospyModeButton, &QRadioButton::toggled, this, &MainWindow::writeExecModeToSettings);
+    QObject::connect(_ui->defaultModeButton, &QRadioButton::toggled, this, &Launcher::writeExecModeToSettings);
+    QObject::connect(_ui->heliospyModeButton, &QRadioButton::toggled, this, &Launcher::writeExecModeToSettings);
     auto numArgs = _settings->beginReadArray("ARGS");
     for (int i = 0; i < numArgs; i++)
     {
@@ -46,9 +46,9 @@ MainWindow::MainWindow(QSettings* settings, QWidget* parent)
     this->updateCmd();
 
     // update command browser in real time when helios base directory, survey.xml or arguments change
-    QObject::connect(_ui->heliosBaseDirLineEdit, &QLineEdit::textChanged, this, &MainWindow::updateCmd);
-    QObject::connect(_ui->surveyPathLineEdit, &QLineEdit::textChanged, this, &MainWindow::updateCmd);
-    QObject::connect(_ui->argsEditor, &QPlainTextEdit::textChanged, this, &MainWindow::updateCmd);
+    QObject::connect(_ui->heliosBaseDirLineEdit, &QLineEdit::textChanged, this, &Launcher::updateCmd);
+    QObject::connect(_ui->surveyPathLineEdit, &QLineEdit::textChanged, this, &Launcher::updateCmd);
+    QObject::connect(_ui->argsEditor, &QPlainTextEdit::textChanged, this, &Launcher::updateCmd);
 
     // set up process
     _process.setWorkingDirectory(_settings->value("DIRS/HeliosBaseDir").toString());
@@ -56,13 +56,13 @@ MainWindow::MainWindow(QSettings* settings, QWidget* parent)
 
 // clang-format off
     // when changing the helios base directory, survey.xml or optional arguments, instantly save new values to settings
-    QObject::connect(_ui->heliosBaseDirLineEdit, &QLineEdit::editingFinished, this, &MainWindow::writeHeliosBaseDirToSettings);
-    QObject::connect(_ui->surveyPathLineEdit, &QLineEdit::editingFinished, this, &MainWindow::writeLastSurveyToSettings);
+    QObject::connect(_ui->heliosBaseDirLineEdit, &QLineEdit::editingFinished, this, &Launcher::writeHeliosBaseDirToSettings);
+    QObject::connect(_ui->surveyPathLineEdit, &QLineEdit::editingFinished, this, &Launcher::writeLastSurveyToSettings);
 
     // Buttons: Open File Dialogs to select helios base directory and survey.xml
     QObject::connect(_ui->heliosBaseDirButton, &QPushButton::clicked, this, [this]()
                     {
-                        const QString heliosBaseDir = QFileDialog::getExistingDirectory(this, tr("Select Helios++ base directory"), _settings->value("DIRS/HeliosBaseDir").toString());
+                        const QString heliosBaseDir = QFileDialog::getExistingDirectory(this, tr("Select HELIOS++ base directory"), _settings->value("DIRS/HeliosBaseDir").toString());
                         if (!heliosBaseDir.isEmpty())
                         {
                             _ui->heliosBaseDirLineEdit->setText(heliosBaseDir);
@@ -79,7 +79,7 @@ MainWindow::MainWindow(QSettings* settings, QWidget* parent)
                         }
                     });
 
-    // HelpDialog button displays Helios++ main help
+    // Help button displays HELIOS++ main help
     QObject::connect(_ui->helpButton, &QPushButton::clicked, this, [this]()
                     {
 #ifdef _WIN32
@@ -115,13 +115,13 @@ MainWindow::MainWindow(QSettings* settings, QWidget* parent)
 #endif
                     });
 
-    // Redirect console output of Helios++ to QTextBrowser
-    QObject::connect(_ui->runButton, &QPushButton::clicked, this, &MainWindow::startHeliospp);
-    QObject::connect(&_process, &QProcess::readyReadStandardOutput, this, &MainWindow::redirectStdout);
-    QObject::connect(&_process, &QProcess::readyReadStandardError, this, &MainWindow::redirectStderr);
-    QObject::connect(&_process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &MainWindow::exitHeliospp);
+    // Redirect console output of HELIOS++ to QTextBrowser
+    QObject::connect(_ui->runButton, &QPushButton::clicked, this, &Launcher::startHeliospp);
+    QObject::connect(&_process, &QProcess::readyReadStandardOutput, this, &Launcher::redirectStdout);
+    QObject::connect(&_process, &QProcess::readyReadStandardError, this, &Launcher::redirectStderr);
+    QObject::connect(&_process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &Launcher::exitHeliospp);
 
-    // Kill running Helioss++
+    // Kill running HELIOS++
     QObject::connect(_ui->cancelButton, &QPushButton::clicked, this, [this]()
                     {
                         if (_process.state() == QProcess::Running)
@@ -130,14 +130,14 @@ MainWindow::MainWindow(QSettings* settings, QWidget* parent)
                         }
                     });
 
-    // Open Helios++ output directory in file explorer
+    // Open HELIOS++ output directory in file explorer
     QObject::connect(_ui->openOutputDirButton, &QPushButton::clicked, this, [this]()
                     {
                         const QUrl outputDirUrl = QUrl::fromLocalFile(_outputDir);
                         QDesktopServices::openUrl(outputDirUrl);
                     });
 
-    // Clear helios++ output
+    // Clear HELIOS++ output
     QObject::connect(_ui->clearButton, &QPushButton::clicked, this, [this]()
                     {
                         _ui->outputBrowser->clear();
@@ -146,7 +146,7 @@ MainWindow::MainWindow(QSettings* settings, QWidget* parent)
 // clang-format on
 }
 
-MainWindow::~MainWindow()
+Launcher::~Launcher()
 {
     // save settings on close
     this->writeHeliosBaseDirToSettings();
@@ -168,7 +168,7 @@ MainWindow::~MainWindow()
     delete _ui;
 }
 
-void MainWindow::writeHeliosBaseDirToSettings()
+void Launcher::writeHeliosBaseDirToSettings()
 {
 #ifdef _WIN32
     _ui->heliosBaseDirLineEdit->setText(_ui->heliosBaseDirLineEdit->text().replace("/", "\\"));
@@ -177,7 +177,7 @@ void MainWindow::writeHeliosBaseDirToSettings()
     _process.setWorkingDirectory(_ui->heliosBaseDirLineEdit->text());
 }
 
-void MainWindow::writeLastSurveyToSettings()
+void Launcher::writeLastSurveyToSettings()
 {
 #ifdef _WIN32
     _ui->surveyPathLineEdit->setText(_ui->surveyPathLineEdit->text().replace("/", "\\"));
@@ -190,7 +190,7 @@ void MainWindow::writeLastSurveyToSettings()
     _settings->setValue("DIRS/LastSurvey", _ui->surveyPathLineEdit->text());
 }
 
-void MainWindow::writeExecModeToSettings()
+void Launcher::writeExecModeToSettings()
 {
     if (_ui->defaultModeButton->isChecked())
     {
@@ -207,7 +207,7 @@ void MainWindow::writeExecModeToSettings()
     this->updateCmd();
 }
 
-void MainWindow::updateCmd()
+void Launcher::updateCmd()
 {
     _ui->cmdBrowser->clear();
 #ifdef _WIN32
@@ -252,7 +252,7 @@ void MainWindow::updateCmd()
 #endif
 }
 
-void MainWindow::startHeliospp()
+void Launcher::startHeliospp()
 {
     // Read survey path from surveyPathLineEdit and optional arguments from argsEditor
     auto options = QStringList() << _ui->surveyPathLineEdit->text() << _ui->argsEditor->toPlainText().split(QRegExp("[ \n]"));
@@ -296,12 +296,12 @@ void MainWindow::startHeliospp()
 #endif
 }
 
-void MainWindow::redirectStdout()
+void Launcher::redirectStdout()
 {
-    // when '-h' or '--help': redirect output to HelpDialog
+    // when '-h' or '--help': redirect output to Help
     if (_process.arguments().contains("-h") || _process.arguments().contains("--help"))
     {
-        auto* const help = std::make_unique<HelpDialog>(_process.readAll(), this).release();
+        auto* const help = std::make_unique<Help>(_process.readAll(), this).release();
         help->show();
     }
     // when '--version': show version info in MessageBox
@@ -326,7 +326,7 @@ void MainWindow::redirectStdout()
     }
 }
 
-void MainWindow::redirectStderr()
+void Launcher::redirectStderr()
 {
     _ui->cmdBrowser->moveCursor(QTextCursor::End);
     QTextCharFormat fmt;
@@ -339,7 +339,7 @@ void MainWindow::redirectStderr()
     _ui->outputBrowser->verticalScrollBar()->setValue(_ui->outputBrowser->verticalScrollBar()->maximum());
 }
 
-void MainWindow::exitHeliospp()
+void Launcher::exitHeliospp()
 {
     if (!(_process.arguments().contains("--help") || _process.arguments().contains("-h") || _process.arguments().contains("--version")))
     {
@@ -347,7 +347,7 @@ void MainWindow::exitHeliospp()
         if (exitCode == 0)
         {
             _ui->outputBrowser->append("HELIOS++ exited successfully\n");
-            // Extract output directory from Helios++ output
+            // Extract output directory from HELIOS++ output
             QString relOutDir;
             for (auto& line : _ui->outputBrowser->toPlainText().split("\n"))
             {

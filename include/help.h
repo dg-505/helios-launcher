@@ -4,22 +4,22 @@
 
 namespace Ui
 {
-    class HelpDialog;
+    class Help;
 } // namespace Ui
 
-class HelpDialog : public QDialog
+class Help : public QDialog
 {
         Q_OBJECT
 
     public:
-        HelpDialog(const HelpDialog&) = delete;
-        HelpDialog(HelpDialog&&) = delete;
-        auto operator=(const HelpDialog&) -> HelpDialog& = delete;
-        auto operator=(HelpDialog&&) -> HelpDialog& = delete;
+        Help(const Help&) = delete;
+        Help(Help&&) = delete;
+        auto operator=(const Help&) -> Help& = delete;
+        auto operator=(Help&&) -> Help& = delete;
 
-        explicit HelpDialog(const QString& msg, QWidget* parent = nullptr);
-        ~HelpDialog() override;
+        explicit Help(const QString& msg, QWidget* parent = nullptr);
+        ~Help() override;
 
     private:
-        Ui::HelpDialog* _ui;
+        Ui::Help* _ui;
 };

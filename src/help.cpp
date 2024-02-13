@@ -1,15 +1,15 @@
 #include "help.h"
 #include "../ui/ui_help.h"
 
-HelpDialog::HelpDialog(const QString& msg, QWidget* parent)
+Help::Help(const QString& msg, QWidget* parent)
     : QDialog(parent),
-      _ui(new Ui::HelpDialog)
+      _ui(new Ui::Help)
 {
     _ui->setupUi(this);
     _ui->helpBrowser->setPlainText(msg);
 }
 
-HelpDialog::~HelpDialog()
+Help::~Help()
 {
     delete _ui;
 }

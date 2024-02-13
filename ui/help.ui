@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>HelpDialog</class>
- <widget class="QDialog" name="HelpDialog">
+ <class>Help</class>
+ <widget class="QDialog" name="Help">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -67,7 +67,7 @@
   <connection>
    <sender>okButton</sender>
    <signal>accepted()</signal>
-   <receiver>HelpDialog</receiver>
+   <receiver>Help</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -83,7 +83,7 @@
   <connection>
    <sender>okButton</sender>
    <signal>rejected()</signal>
-   <receiver>HelpDialog</receiver>
+   <receiver>Help</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

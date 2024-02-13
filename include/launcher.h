@@ -7,22 +7,22 @@
 QT_BEGIN_NAMESPACE
 namespace Ui
 {
-class MainWindow;
+class Launcher;
 } // namespace Ui
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
+class Launcher : public QMainWindow
 {
     Q_OBJECT // NOLINT
 
 public:
-    MainWindow(const MainWindow&) = delete;
-    MainWindow(MainWindow&&) = delete;
-    auto operator=(const MainWindow&) -> MainWindow& = delete;
-    auto operator=(MainWindow&&) -> MainWindow& = delete;
+    Launcher(const Launcher&) = delete;
+    Launcher(Launcher&&) = delete;
+    auto operator=(const Launcher&) -> Launcher& = delete;
+    auto operator=(Launcher&&) -> Launcher& = delete;
 
-    explicit MainWindow(QSettings* settings, QWidget* parent = nullptr);
-    ~MainWindow() override;
+    explicit Launcher(QSettings* settings, QWidget* parent = nullptr);
+    ~Launcher() override;
 
 public Q_SLOTS:
     void updateCmd();
@@ -30,14 +30,14 @@ public Q_SLOTS:
     void writeHeliosBaseDirToSettings();
     void writeLastSurveyToSettings();
     void writeExecModeToSettings();
-    // Redirect console output of Helios++ to QTextBrowser
+    // Redirect console output of HELIOS++ to QTextBrowser
     void startHeliospp();
     void redirectStdout();
     void redirectStderr();
     void exitHeliospp();
 
 private:
-    Ui::MainWindow* _ui;
+    Ui::Launcher* _ui;
     QSettings* _settings;
     QProcess _process;
     QString _outputDir;
