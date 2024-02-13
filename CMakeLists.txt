@@ -20,9 +20,9 @@ set(app_icon_resource_windows "${CMAKE_CURRENT_SOURCE_DIR}/res/helios-launcher.r
 
 add_executable(helios-launcher
         ${app_icon_resource_windows}
-        include/launcher.h include/help.h
-        src/main.cpp src/launcher.cpp src/help.cpp
-        ui/launcher.ui ui/help.ui
+        include/launcher.h include/basedir.h include/help.h
+        src/main.cpp src/launcher.cpp src/basedir.cpp src/help.cpp
+        ui/launcher.ui ui/basedir.ui ui/help.ui
         res/resources.qrc
         ${TS_FILES}
 )

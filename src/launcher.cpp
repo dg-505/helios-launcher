@@ -4,6 +4,7 @@
 #include <QScrollBar>
 
 #include "../ui/ui_launcher.h"
+#include "basedir.h"
 #include "help.h"
 #include "launcher.h"
 
@@ -83,11 +84,11 @@ Launcher::Launcher(QSettings* settings, QWidget* parent)
     QObject::connect(_ui->helpButton, &QPushButton::clicked, this, [this]()
                     {
 #ifdef _WIN32
-                        if (_settings->value("MODE/ExecMode").toString() == "default")
+                        if (_ui->defaultModeButton->isChecked() && !_ui->heliospyModeButton->isChecked())
                         {
                             _process.start(_process.workingDirectory() + "/run/helios.exe", QStringList() << "--help");
                         }
-                        else if (_settings->value("MODE/ExecMode").toString() == "helios.py")
+                        else if (!_ui->defaultModeButton->isChecked() && _ui->heliospyModeButton->isChecked())
                         {
                             _process.start("python", QStringList() << _process.workingDirectory() + "/run/helios.py" << "--help");
                         }
@@ -100,11 +101,11 @@ Launcher::Launcher(QSettings* settings, QWidget* parent)
                         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
                         env.insert("LD_LIBRARY_PATH", _process.workingDirectory() + "/run");
                         _process.setProcessEnvironment(env);
-                        if (_settings->value("MODE/ExecMode").toString() == "default")
+                        if (_ui->defaultModeButton->isChecked() && !_ui->heliospyModeButton->isChecked())
                         {
                             _process.start("run/helios", QStringList() << "--help");
                         }
-                        else if (_settings->value("MODE/ExecMode").toString() == "helios.py")
+                        else if (!_ui->defaultModeButton->isChecked() && _ui->heliospyModeButton->isChecked())
                         {
                             _process.start("python3", QStringList() << "run/helios.py" << "--help");
                         }
@@ -213,11 +214,11 @@ void Launcher::updateCmd()
 #ifdef _WIN32
     _ui->cmdBrowser->moveCursor(QTextCursor::End);
     _ui->cmdBrowser->insertPlainText(_ui->heliosBaseDirLineEdit->text().replace("/", "\\") + ">");
-    if (_settings->value("MODE/ExecMode").toString() == "default")
+    if (_ui->defaultModeButton->isChecked() && !_ui->heliospyModeButton->isChecked())
     {
         _ui->cmdBrowser->insertPlainText("run\\helios ");
     }
-    else if (_settings->value("MODE/ExecMode").toString() == "helios.py")
+    else if (!_ui->defaultModeButton->isChecked() && _ui->heliospyModeButton->isChecked())
     {
         _ui->cmdBrowser->insertPlainText("python run\\helios.py ");
     }
@@ -240,13 +241,17 @@ void Launcher::updateCmd()
     fmt.setForeground(Qt::white);
     fmt.setFontWeight(QFont::Normal);
     _ui->cmdBrowser->setCurrentCharFormat(fmt);
-    if (_settings->value("MODE/ExecMode").toString() == "default")
+    if (_ui->defaultModeButton->isChecked() && !_ui->heliospyModeButton->isChecked())
     {
         _ui->cmdBrowser->insertPlainText("$ run/helios ");
     }
-    else if (_settings->value("MODE/ExecMode").toString() == "helios.py")
+    else if (!_ui->defaultModeButton->isChecked() && _ui->heliospyModeButton->isChecked())
     {
         _ui->cmdBrowser->insertPlainText("$ python3 run/helios.py ");
+    }
+    else
+    {
+        _ui->cmdBrowser->insertPlainText("$ ");
     }
     _ui->cmdBrowser->insertPlainText(_ui->surveyPathLineEdit->text() + " " + _ui->argsEditor->toPlainText().replace("\n", " "));
 #endif
@@ -254,6 +259,20 @@ void Launcher::updateCmd()
 
 void Launcher::startHeliospp()
 {
+    if (_settings->value("DIRS/HeliosBaseDir").isNull() || _settings->value("DIRS/HeliosBaseDir").toString() == "")
+    {
+        auto* baseDir = std::make_unique<BaseDir>(nullptr).release();
+        if (baseDir->exec() == QDialog::Accepted)
+        {
+            _ui->heliosBaseDirLineEdit->setText(baseDir->getBaseDir());
+            _settings->setValue("DIRS/HeliosBaseDir", baseDir->getBaseDir());
+            _process.setWorkingDirectory(baseDir->getBaseDir());
+        }
+        else
+        {
+            return;
+        }
+    }
     // Read survey path from surveyPathLineEdit and optional arguments from argsEditor
     auto options = QStringList() << _ui->surveyPathLineEdit->text() << _ui->argsEditor->toPlainText().split(QRegExp("[ \n]"));
     options.removeAll("");
@@ -264,11 +283,11 @@ void Launcher::startHeliospp()
         _ui->outputBrowser->clear();
     }
 #ifdef _WIN32
-    if (_settings->value("MODE/ExecMode").toString() == "default")
+    if (_ui->defaultModeButton->isChecked() && !_ui->heliospyModeButton->isChecked())
     {
         _process.start(_process.workingDirectory() + "/run/helios.exe", options);
     }
-    else if (_settings->value("MODE/ExecMode").toString() == "helios.py")
+    else if (!_ui->defaultModeButton->isChecked() && _ui->heliospyModeButton->isChecked())
     {
         _process.start("python", QStringList() << _process.workingDirectory() + "/run/helios.py" << options);
     }
@@ -281,11 +300,11 @@ void Launcher::startHeliospp()
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     env.insert("LD_LIBRARY_PATH", _process.workingDirectory() + "/run");
     _process.setProcessEnvironment(env);
-    if (_settings->value("MODE/ExecMode").toString() == "default")
+    if (_ui->defaultModeButton->isChecked() && !_ui->heliospyModeButton->isChecked())
     {
         _process.start("run/helios", options);
     }
-    else if (_settings->value("MODE/ExecMode").toString() == "helios.py")
+    else if (!_ui->defaultModeButton->isChecked() && _ui->heliospyModeButton->isChecked())
     {
         _process.start("python3", QStringList() << "run/helios.py" << options);
     }
@@ -299,7 +318,7 @@ void Launcher::startHeliospp()
 void Launcher::redirectStdout()
 {
     // when '-h' or '--help': redirect output to Help
-    if (_process.arguments().contains("-h") || _process.arguments().contains("--help"))
+    if (_process.arguments().contains("-h") || _process.arguments().contains("--help") || _process.arguments().isEmpty())
     {
         auto* const help = std::make_unique<Help>(_process.readAll(), this).release();
         help->show();
@@ -341,7 +360,7 @@ void Launcher::redirectStderr()
 
 void Launcher::exitHeliospp()
 {
-    if (!(_process.arguments().contains("--help") || _process.arguments().contains("-h") || _process.arguments().contains("--version")))
+    if (!(_process.arguments().contains("--help") || _process.arguments().contains("-h") || _process.arguments().contains("--version")) && !_process.arguments().isEmpty())
     {
         auto exitCode = _process.exitCode();
         if (exitCode == 0)
