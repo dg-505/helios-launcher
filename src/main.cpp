@@ -11,6 +11,7 @@ auto main(int argc, char* argv[]) -> int
     Q_INIT_RESOURCE(resources); // NOLINT
 
     const QApplication launcherApp(argc, argv);
+    QApplication::setStyle("fusion");
 
     // settings to preserve between sessions
     // default location on Linux: ~/.config/heliospp/helios-launcher.ini
