@@ -184,9 +184,11 @@ void Launcher::writeLastSurveyToSettings()
     _ui->surveyPathLineEdit->setText(_ui->surveyPathLineEdit->text().replace("/", "\\"));
 #endif
     // when survey.xml is within helios base directory, use relative path
-    if (_ui->surveyPathLineEdit->text().startsWith(_settings->value("DIRS/HeliosBaseDir").toString()))
+    if (_ui->surveyPathLineEdit->text().startsWith(_settings->value("DIRS/HeliosBaseDir").toString())
+        && _ui->heliosBaseDirLineEdit->text() != ""
+        && QDir(_ui->heliosBaseDirLineEdit->text()).exists())
     {
-        _ui->surveyPathLineEdit->setText(_ui->surveyPathLineEdit->text().replace(_settings->value("DIRS/HeliosBaseDir").toString(), "."));
+        _ui->surveyPathLineEdit->setText(_ui->surveyPathLineEdit->text().replace(_ui->heliosBaseDirLineEdit->text(), "."));
     }
     _settings->setValue("DIRS/LastSurvey", _ui->surveyPathLineEdit->text());
 }

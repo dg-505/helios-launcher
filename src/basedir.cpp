@@ -27,7 +27,10 @@ auto BaseDir::getBaseDir() const -> QString
 void BaseDir::browse()
 {
     const auto dir = QFileDialog::getExistingDirectory(this, tr("Specify the HELIOS++ base directory"), _ui->baseDirLine->text(), QFileDialog::ShowDirsOnly);
-    _ui->baseDirLine->setText(dir);
+    if (!dir.isEmpty())
+    {
+        _ui->baseDirLine->setText(dir);
+    }
 }
 
 void BaseDir::proceed()
