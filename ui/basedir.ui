@@ -107,7 +107,7 @@
         <cursorShape>PointingHandCursor</cursorShape>
        </property>
        <property name="text">
-        <string>Procee&amp;d</string>
+        <string>P&amp;roceed</string>
        </property>
        <property name="icon">
         <iconset theme="media-playback-start"/>
