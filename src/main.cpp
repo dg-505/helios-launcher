@@ -10,6 +10,9 @@ auto main(int argc, char* argv[]) -> int
 {
     Q_INIT_RESOURCE(resources); // NOLINT
 
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
+
     const QApplication launcherApp(argc, argv);
     QApplication::setStyle("fusion");
 
