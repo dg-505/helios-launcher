@@ -16,9 +16,6 @@
     <height>0</height>
    </size>
   </property>
-  <property name="windowTitle">
-   <string>HELIOS++ launcher</string>
-  </property>
   <property name="windowIcon">
    <iconset resource="../res/resources.qrc">
     <normaloff>:/heliospp.png</normaloff>:/heliospp.png</iconset>

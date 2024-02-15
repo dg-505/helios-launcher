@@ -21,7 +21,7 @@ public:
     auto operator=(const Launcher&) -> Launcher& = delete;
     auto operator=(Launcher&&) -> Launcher& = delete;
 
-    explicit Launcher(QSettings* settings, QWidget* parent = nullptr);
+    explicit Launcher(const std::string& version, QSettings* settings, QWidget* parent = nullptr);
     ~Launcher() override;
 
 public Q_SLOTS:

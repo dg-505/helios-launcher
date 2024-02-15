@@ -46,7 +46,10 @@ auto main(int argc, char* argv[]) -> int
             break;
         }
     }
-    Launcher launcher(&settings);
+
+    std::string version;
+    version = "0.1.0";
+    Launcher launcher(version, &settings);
     launcher.show();
     return QApplication::exec();
 }

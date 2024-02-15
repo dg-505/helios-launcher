@@ -8,7 +8,7 @@
 #include "help.h"
 #include "launcher.h"
 
-Launcher::Launcher(QSettings* settings, QWidget* parent)
+Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* parent)
     : QMainWindow(parent),
       _ui(new Ui::Launcher),
       _settings(settings),
@@ -17,6 +17,7 @@ Launcher::Launcher(QSettings* settings, QWidget* parent)
 {
     _ui->setupUi(this);
     this->setWindowIcon(QIcon(":/heliospp.png"));
+    this->setWindowTitle("HELIOS++ launcher version " + QString::fromStdString(version));
 
     // restore helios base directory, last survey.xml, execution mode and optional arguments from settings
     _ui->heliosBaseDirLineEdit->setText(_settings->value("DIRS/HeliosBaseDir").toString());
