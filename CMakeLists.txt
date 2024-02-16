@@ -1,6 +1,17 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(helios-launcher VERSION 0.1 LANGUAGES CXX)
+# extract version number from InnoSetup script
+file(READ "./util/win/packInstaller.iss" ISS)
+string(REGEX MATCH "Version \"([0-9]+\\.[0-9]+\\.[0-9]+)\"" _ ${ISS})
+set(VERSION_NUMBER "${CMAKE_MATCH_1}")
+message("Helios++ launcher Version: ${VERSION_NUMBER}")
+# Replace old version number with new version number
+set(MAIN_FILE "./src/main.cpp")
+file(READ ${MAIN_FILE} MAIN)
+string(REGEX REPLACE "\"([0-9]+\\.[0-9]+\\.[0-9]+)\";" "\"${VERSION_NUMBER}\";" MOD "${MAIN}")
+file(WRITE ${MAIN_FILE} "${MOD}")
+
+project(helios-launcher VERSION ${VERSION_NUMBER} LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
