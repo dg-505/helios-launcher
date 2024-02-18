@@ -1,5 +1,7 @@
-<RCC>
-  <qresource>
+<!DOCTYPE RCC>
+<RCC version="1.0">
+  <qresource prefix="/">
     <file>heliospp.png</file>
+    <file>qt/etc/qt.conf</file>
   </qresource>
 </RCC>
