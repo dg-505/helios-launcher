@@ -30,14 +30,22 @@ include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/ui)
 set(app_icon_resource_windows "${CMAKE_CURRENT_SOURCE_DIR}/res/helios-launcher.rc")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+file(COPY ${CMAKE_PREFIX_PATH}/plugins/platforms DESTINATION ${CMAKE_BINARY_DIR}/plugins)
+if (UNIX AND NOT APPLE)
+    foreach(LIB IN ITEMS "libicudata.so.56" "libicudata.so.56.1" "libicui18n.so.56" "libicui18n.so.56.1" "libicuuc.so.56" "libicuuc.so.56.1" "libQt5Core.so.5" "libQt5Core.so.5.15.16" "libQt5DBus.so.5" "libQt5DBus.so.5.15.16" "libQt5Gui.so.5" "libQt5Gui.so.5.15.16" "libQt5Widgets.so.5" "libQt5Widgets.so.5.15.16" "libQt5XcbQpa.so.5" "libQt5XcbQpa.so.5.15.16")
+        file(COPY ${CMAKE_PREFIX_PATH}/lib/${LIB} DESTINATION ${CMAKE_BINARY_DIR}/lib)
+    endforeach()
+    file(COPY "/usr/lib/x86_64-linux-gnu/libxcb-xinerama.so.0" DESTINATION ${CMAKE_BINARY_DIR}/lib)
+    file(COPY "/usr/lib/x86_64-linux-gnu/libxcb-xinerama.so.0.0.0" DESTINATION ${CMAKE_BINARY_DIR}/lib)
+endif ()
 
 add_executable(helios-launcher
-        ${app_icon_resource_windows}
-        include/launcher.h include/basedir.h include/help.h
-        src/main.cpp src/launcher.cpp src/basedir.cpp src/help.cpp
-        ui/launcher.ui ui/basedir.ui ui/help.ui
-        res/resources.qrc
-        ${TS_FILES}
+    ${app_icon_resource_windows}
+    include/launcher.h include/basedir.h include/help.h
+    src/main.cpp src/launcher.cpp src/basedir.cpp src/help.cpp
+    ui/launcher.ui ui/basedir.ui ui/help.ui
+    res/resources.qrc
+    ${TS_FILES}
 )
 
 qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
