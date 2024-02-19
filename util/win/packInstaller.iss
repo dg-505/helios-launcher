@@ -13,10 +13,10 @@ AppVersion={#Version}
 DefaultDirName={localappdata}\Programs\{#Name}
 DefaultGroupName=HELIOS++
 AllowNoIcons=yes
-LicenseFile=../../../release/WindowsInstaller/LICENSE
-OutputDir=../../../release
+LicenseFile=../../../deploy/WindowsInstaller/LICENSE
+OutputDir=../../../deploy
 OutputBaseFilename={#Name}-v{#Version}-win64-setup
-SetupIconFile=../../../release/WindowsInstaller/ico/heliospp.ico
+SetupIconFile=../../../deploy/WindowsInstaller/ico/heliospp.ico
 Compression=lzma
 SolidCompression=yes
 UninstallDisplayIcon={app}/ico/heliospp.ico
@@ -50,7 +50,7 @@ Type: filesandordirs; Name: "{app}"
 Type: filesandordirs; Name: "{userappdata}\heliospp"; Tasks: removeconfig
 
 [Files]
-Source: "../../../release/WindowsInstaller/*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs;
+Source: "../../../deploy/WindowsInstaller/*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs;
 
 [Icons]
 Name: "{group}\{#Alias}"; Filename: "{app}/bin/{#ExeName}"
