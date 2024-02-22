@@ -18,6 +18,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     _ui->setupUi(this);
     this->setWindowIcon(QIcon(":/heliospp.png"));
     this->setWindowTitle("HELIOS++ launcher version " + QString::fromStdString(version));
+    _ui->settingsWidget->layout()->setAlignment(Qt::AlignTop);
 
     // restore helios base directory, last survey.xml, execution mode and optional arguments from settings
     _ui->heliosBaseDirLineEdit->setText(_settings->value("DIRS/HeliosBaseDir").toString());
@@ -82,7 +83,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                     });
 
     // Help button displays HELIOS++ main help
-    QObject::connect(_ui->helpButton, &QPushButton::clicked, this, [this]()
+    QObject::connect(_ui->showHelpButton, &QPushButton::clicked, this, [this]()
                     {
 #ifdef _WIN32
                         if (_ui->defaultModeButton->isChecked() && !_ui->heliospyModeButton->isChecked())
