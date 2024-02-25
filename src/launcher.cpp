@@ -1,7 +1,9 @@
+#include <QButtonGroup>
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QScrollBar>
+#include <QThread>
 
 #include "../ui/ui_launcher.h"
 #include "basedir.h"
@@ -20,6 +22,41 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     this->setWindowTitle("HELIOS++ launcher version " + QString::fromStdString(version));
     _ui->settingsWidget->layout()->setAlignment(Qt::AlignTop);
 
+    // Use QButtonGroup for 'General' and 'Output' options
+    auto* generalGroup = new QButtonGroup(_ui->generalBox);
+    generalGroup->addButton(_ui->runOptionButton);
+    generalGroup->addButton(_ui->helpButton);
+    generalGroup->addButton(_ui->versionButton);
+    generalGroup->addButton(_ui->testButton);
+    generalGroup->setExclusive(true);
+
+    auto* outputGroup = new QButtonGroup(_ui->outputBox);
+    outputGroup->addButton(_ui->asciiButton);
+    outputGroup->addButton(_ui->lasButton);
+    outputGroup->addButton(_ui->las10Button);
+
+    // Some options are only available in default mode, not in helios.py mode (according to the "--help" outputs of both)
+    QObject::connect(_ui->heliospyModeButton, &QRadioButton::toggled, this, [this]()
+                     { _ui->lasScaleSpinbox->setEnabled(!_ui->heliospyModeButton->isChecked() && _ui->lasScaleCheckbox->isChecked()); });
+    QObject::connect(_ui->lasScaleCheckbox, &QCheckBox::toggled, this, [this]()
+                     { _ui->lasScaleSpinbox->setEnabled(!_ui->heliospyModeButton->isChecked() && _ui->lasScaleCheckbox->isChecked()); });
+    QObject::connect(_ui->heliospyModeButton, &QRadioButton::toggled, this, [this]()
+                     { _ui->strategyWidget->setEnabled(!_ui->heliospyModeButton->isChecked() && _ui->strategyCheckbox->isChecked()); });
+    QObject::connect(_ui->strategyCheckbox, &QCheckBox::toggled, this, [this]()
+                     { _ui->strategyWidget->setEnabled(!_ui->heliospyModeButton->isChecked() && _ui->strategyCheckbox->isChecked()); });
+    QObject::connect(_ui->heliospyModeButton, &QRadioButton::toggled, this, [this]()
+                     { _ui->chunkSizeWidget->setEnabled(!_ui->heliospyModeButton->isChecked() && _ui->chunkSizeCheckbox->isChecked()); });
+    QObject::connect(_ui->chunkSizeCheckbox, &QCheckBox::toggled, this, [this]()
+                     { _ui->chunkSizeWidget->setEnabled(!_ui->heliospyModeButton->isChecked() && _ui->chunkSizeCheckbox->isChecked()); });
+    QObject::connect(_ui->heliospyModeButton, &QRadioButton::toggled, this, [this]()
+                     { _ui->warehouseFactorWidget->setEnabled(!_ui->heliospyModeButton->isChecked() && _ui->warehouseFactorCheckbox->isChecked()); });
+    QObject::connect(_ui->warehouseFactorCheckbox, &QCheckBox::toggled, this, [this]()
+                     { _ui->warehouseFactorWidget->setEnabled(!_ui->heliospyModeButton->isChecked() && _ui->warehouseFactorCheckbox->isChecked()); });
+    QObject::connect(_ui->heliospyModeButton, &QRadioButton::toggled, this, [this]()
+                     { _ui->gpsStartTimeEdit->setEnabled(!_ui->heliospyModeButton->isChecked() && _ui->gpsStartTimeCheckbox->isChecked()); });
+    QObject::connect(_ui->gpsStartTimeCheckbox, &QCheckBox::toggled, this, [this]()
+                     { _ui->gpsStartTimeEdit->setEnabled(!_ui->heliospyModeButton->isChecked() && _ui->gpsStartTimeCheckbox->isChecked()); });
+
     // restore helios base directory, last survey.xml, execution mode and optional arguments from settings
     _ui->heliosBaseDirLineEdit->setText(_settings->value("DIRS/HeliosBaseDir").toString());
     _ui->surveyPathLineEdit->setText(_settings->value("DIRS/LastSurvey").toString());
@@ -29,8 +66,39 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
 #endif
     _ui->defaultModeButton->setChecked(_settings->value("MODE/ExecMode").toString() == "default");
     _ui->heliospyModeButton->setChecked(_settings->value("MODE/ExecMode").toString() == "helios.py");
-    QObject::connect(_ui->defaultModeButton, &QRadioButton::toggled, this, &Launcher::writeExecModeToSettings);
-    QObject::connect(_ui->heliospyModeButton, &QRadioButton::toggled, this, &Launcher::writeExecModeToSettings);
+
+    // disable options when unchecked
+    _ui->heliospyBox->setDisabled(_ui->defaultModeButton->isChecked());
+    _ui->lasScaleSpinbox->setDisabled(!_ui->lasScaleCheckbox->isChecked());
+    _ui->strategyWidget->setDisabled(!_ui->strategyCheckbox->isChecked());
+    _ui->nthreadWidget->setDisabled(!_ui->nthreadCheckbox->isChecked());
+    _ui->chunkSizeWidget->setDisabled(!_ui->chunkSizeCheckbox->isChecked());
+    _ui->warehouseFactorWidget->setDisabled(!_ui->warehouseFactorCheckbox->isChecked());
+    _ui->seedEdit->setDisabled(!_ui->seedCheckbox->isChecked());
+    _ui->gpsStartTimeEdit->setDisabled(!_ui->gpsStartTimeCheckbox->isChecked());
+    _ui->kdtTypeWidget->setDisabled(!_ui->kdtTypeCheckbox->isChecked());
+    _ui->kdtThreadsWidget->setDisabled(!_ui->kdtThreadsCheckbox->isChecked());
+    _ui->kdtGeomThreadsWidget->setDisabled(!_ui->kdtGeomThreadsCheckbox->isChecked());
+    _ui->SAHnodesWidget->setDisabled(!_ui->SAHnodesCheckbox->isChecked());
+    _ui->unzipInputLabel->setDisabled(!_ui->unzipCheckbox->isChecked());
+    _ui->unzipOutputLabel->setDisabled(!_ui->unzipCheckbox->isChecked());
+    _ui->unzipInputEdit->setDisabled(!_ui->unzipCheckbox->isChecked());
+    _ui->unzipOutputEdit->setDisabled(!_ui->unzipCheckbox->isChecked());
+    _ui->unzipInputBrowseButton->setDisabled(!_ui->unzipCheckbox->isChecked());
+    _ui->unzipOutputBrowseButton->setDisabled(!_ui->unzipCheckbox->isChecked());
+    _ui->assetsEdit->setDisabled(!_ui->assetsCheckbox->isChecked());
+    _ui->assetsBrowseButton->setDisabled(!_ui->assetsCheckbox->isChecked());
+    _ui->outputEdit->setDisabled(!_ui->outputCheckbox->isChecked());
+    _ui->outputBrowseButton->setDisabled(!_ui->outputCheckbox->isChecked());
+
+    // fill command browser
+    _ui->cmdBrowser->setWordWrapMode(QTextOption::WrapAnywhere);
+    this->updateCmd();
+
+    // set up process
+    _process.setWorkingDirectory(_settings->value("DIRS/HeliosBaseDir").toString());
+    _process.setProcessChannelMode(QProcess::MergedChannels);
+
     auto numArgs = _settings->beginReadArray("ARGS");
     for (int i = 0; i < numArgs; i++)
     {
@@ -44,23 +112,34 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     }
     _settings->endArray();
 
-    // fill command browser
-    _ui->cmdBrowser->setWordWrapMode(QTextOption::WrapAnywhere);
-    this->updateCmd();
+    // set thread settings maximum to number of available threads
+    auto numThreads = QThread::idealThreadCount();
+    _ui->nthreadSlider->setMaximum(numThreads);
+    _ui->nThreadMaxLabel->setText(QString::number(numThreads));
+    _ui->nthreadSpinbox->setMaximum(numThreads);
+    _ui->kdtThreadsSlider->setMaximum(numThreads);
+    _ui->kdtThreadsMaxLabel->setText(QString::number(numThreads));
+    _ui->kdtThreadsSpinbox->setMaximum(numThreads);
+    _ui->kdtGeomThreadsSlider->setMaximum(numThreads);
+    _ui->kdtGeomThreadsMaxLabel->setText(QString::number(numThreads));
+    _ui->kdtGeomThreadsSpinbox->setMaximum(numThreads);
+
+    // clang-format off
+
+    // write execution mode to settings in real time
+    QObject::connect(_ui->defaultModeButton, &QRadioButton::toggled, this, &Launcher::writeExecModeToSettings);
+    QObject::connect(_ui->heliospyModeButton, &QRadioButton::toggled, this, &Launcher::writeExecModeToSettings);
 
     // update command browser in real time when helios base directory, survey.xml or arguments change
     QObject::connect(_ui->heliosBaseDirLineEdit, &QLineEdit::textChanged, this, &Launcher::updateCmd);
     QObject::connect(_ui->surveyPathLineEdit, &QLineEdit::textChanged, this, &Launcher::updateCmd);
     QObject::connect(_ui->argsEditor, &QPlainTextEdit::textChanged, this, &Launcher::updateCmd);
 
-    // set up process
-    _process.setWorkingDirectory(_settings->value("DIRS/HeliosBaseDir").toString());
-    _process.setProcessChannelMode(QProcess::MergedChannels);
-
-// clang-format off
     // when changing the helios base directory, survey.xml or optional arguments, instantly save new values to settings
     QObject::connect(_ui->heliosBaseDirLineEdit, &QLineEdit::editingFinished, this, &Launcher::writeHeliosBaseDirToSettings);
     QObject::connect(_ui->surveyPathLineEdit, &QLineEdit::editingFinished, this, &Launcher::writeLastSurveyToSettings);
+
+    // Button functions
 
     // Buttons: Open File Dialogs to select helios base directory and survey.xml
     QObject::connect(_ui->heliosBaseDirButton, &QPushButton::clicked, this, [this]()
@@ -146,7 +225,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                         _ui->outputBrowser->clear();
                         _outputDir = _settings->value("DIRS/HeliosBaseDir").toString() + "/output";
                     });
-// clang-format on
+    // clang-format on
 }
 
 Launcher::~Launcher()
