@@ -33,6 +33,48 @@ auto main(int argc, char* argv[]) -> int
         {
             return 1;
         }
+        // set default values for optional arguments
+        settings.beginGroup("ARGS");
+        settings.setValue("General", "");
+        settings.setValue("Output", "");
+        settings.setValue("ZipOutput", "false");
+        settings.setValue("LasScale", "default");
+        settings.setValue("Parallelization", "default");
+        settings.setValue("nthreads", "default");
+        settings.setValue("ChunkSize", "default");
+        settings.setValue("WarehouseFactor", "default");
+        settings.setValue("SplitByChannel", "false");
+        settings.setValue("WriteWaveform", "false");
+        settings.setValue("CalcEchoWidth", "false");
+        settings.setValue("FullwaveNoise", "false");
+        settings.setValue("FixedIncidenceAngle", "false");
+        settings.setValue("DisablePlatformNoise", "false");
+        settings.setValue("DisableLegNoise", "false");
+        settings.setValue("Seed", "default");
+        settings.setValue("GpsStartTime", "default");
+        settings.setValue("LogFile", "false");
+        settings.setValue("LogFileOnly", "false");
+        settings.setValue("Silent", "false");
+        settings.setValue("Quiet", "false");
+        settings.setValue("Vt", "false");
+        settings.setValue("V", "false");
+        settings.setValue("VV", "false");
+        settings.setValue("RebuildScene", "false");
+        settings.setValue("KDTree", "default");
+        settings.setValue("KDTreeThreads", "default");
+        settings.setValue("KDTreeGeomThreads", "default");
+        settings.setValue("SAHnodes", "default");
+        settings.setValue("Unzip", "false");
+        settings.setValue("UnzipInput", "");
+        settings.setValue("UnzipOutput", "");
+        settings.setValue("AssetsPathFlag", "false");
+        settings.setValue("AssetsPath", "");
+        settings.setValue("OutputPathFlag", "false");
+        settings.setValue("OutputPath", "");
+        settings.setValue("LiveTrajectoryPlot", "false");
+        settings.setValue("Polyscope", "false");
+        settings.setValue("Open3D", "false");
+        settings.endGroup();
     }
 
     // possible later: add support for translations

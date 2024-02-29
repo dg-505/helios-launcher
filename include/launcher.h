@@ -30,6 +30,16 @@ public Q_SLOTS:
     void writeHeliosBaseDirToSettings();
     void writeLastSurveyToSettings();
     void writeExecModeToSettings();
+    void writeGeneralToSettings();
+    void writeOutputToSettings();
+    void writeNThreadsToSettings();
+    void writeChunkSizeToSettings();
+    void writeWarehouseFactorToSettings();
+    void writeSeedToSettings();
+    void writeGpsStartTimeToSettings();
+    void writeKDTreeThreadsToSettings();
+    void writeKDTreeGeomThreadsToSettings();
+    void writeSAHnodesToSettings();
     // Redirect console output of HELIOS++ to QTextBrowser
     void startHeliospp();
     void redirectStdout();

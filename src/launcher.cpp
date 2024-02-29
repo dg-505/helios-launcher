@@ -22,20 +22,13 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     this->setWindowTitle("HELIOS++ launcher version " + QString::fromStdString(version));
     _ui->settingsWidget->layout()->setAlignment(Qt::AlignTop);
 
-    // Use QButtonGroup for 'General' and 'Output' options
-    auto* generalGroup = new QButtonGroup(_ui->generalBox);
-    generalGroup->addButton(_ui->runOptionButton);
-    generalGroup->addButton(_ui->helpButton);
-    generalGroup->addButton(_ui->versionButton);
-    generalGroup->addButton(_ui->testButton);
-    generalGroup->setExclusive(true);
-
-    auto* outputGroup = new QButtonGroup(_ui->outputBox);
-    outputGroup->addButton(_ui->asciiButton);
-    outputGroup->addButton(_ui->lasButton);
-    outputGroup->addButton(_ui->las10Button);
-
     // Some options are only available in default mode, not in helios.py mode (according to the "--help" outputs of both)
+    QObject::connect(_ui->defaultModeButton, &QRadioButton::toggled, this, [this]()
+                     {
+                         if (_ui->heliospyModeButton->isChecked() && _ui->versionButton->isChecked())
+                         {
+                             _ui->runOptionButton->setChecked(true);
+                         } });
     QObject::connect(_ui->heliospyModeButton, &QRadioButton::toggled, this, [this]()
                      { _ui->lasScaleSpinbox->setEnabled(!_ui->heliospyModeButton->isChecked() && _ui->lasScaleCheckbox->isChecked()); });
     QObject::connect(_ui->lasScaleCheckbox, &QCheckBox::toggled, this, [this]()
@@ -66,6 +59,179 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
 #endif
     _ui->defaultModeButton->setChecked(_settings->value("MODE/ExecMode").toString() == "default");
     _ui->heliospyModeButton->setChecked(_settings->value("MODE/ExecMode").toString() == "helios.py");
+
+    _ui->runOptionButton->setChecked(_settings->value("ARGS/General") == "");
+    _ui->helpButton->setChecked(_settings->value("ARGS/General") == "--help");
+    _ui->versionButton->setChecked(_settings->value("ARGS/General") == "--version");
+    _ui->testButton->setChecked(_settings->value("ARGS/General") == "--test");
+
+    _ui->asciiButton->setChecked(_settings->value("ARGS/Output") == "");
+    _ui->lasButton->setChecked(_settings->value("ARGS/Output") == "--lasOutput");
+    _ui->las10Button->setChecked(_settings->value("ARGS/Output") == "--las10");
+
+    _ui->zipOutputButton->setChecked(_settings->value("ARGS/ZipOutput").toBool());
+    if (_settings->value("ARGS/LasScale").toString() == "default")
+    {
+        _ui->lasScaleCheckbox->setChecked(false);
+    }
+    else
+    {
+        _ui->lasScaleCheckbox->setChecked(true);
+        _ui->lasScaleSpinbox->setValue(_settings->value("ARGS/LasScale").toFloat());
+    }
+    if (_settings->value("ARGS/Parallelization").toString() == "default")
+    {
+        _ui->strategyCheckbox->setChecked(false);
+    }
+    else
+    {
+        _ui->strategyCheckbox->setChecked(true);
+        if (_settings->value("ARGS/Parallelization").toInt() == 0)
+        {
+            _ui->staticDynamicChunkButton->setChecked(true);
+            _ui->warehousButton->setChecked(false);
+        }
+        else if (_settings->value("ARGS/Parallelization").toInt() == 1)
+        {
+            _ui->staticDynamicChunkButton->setChecked(false);
+            _ui->warehousButton->setChecked(true);
+        }
+    }
+    if (_settings->value("ARGS/nthreads").toString() == "default")
+    {
+        _ui->nthreadCheckbox->setChecked(false);
+    }
+    else
+    {
+        _ui->nthreadCheckbox->setChecked(true);
+        _ui->nthreadSlider->setValue(_settings->value("ARGS/nthreads").toInt());
+        _ui->nthreadSpinbox->setValue(_settings->value("ARGS/nthreads").toInt());
+    }
+    if (_settings->value("ARGS/ChunkSize").toString() == "default")
+    {
+        _ui->chunkSizeCheckbox->setChecked(false);
+    }
+    else
+    {
+        _ui->chunkSizeCheckbox->setChecked(true);
+        _ui->chunkSizeSpinbox->setValue(_settings->value("ARGS/ChunkSize").toInt());
+    }
+    if (_settings->value("ARGS/WarehouseFactor").toString() == "default")
+    {
+        _ui->warehouseFactorCheckbox->setChecked(false);
+    }
+    else
+    {
+        _ui->warehouseFactorCheckbox->setChecked(true);
+        _ui->warehouseFactorSpinbox->setValue(_settings->value("ARGS/WarehouseFactor").toInt());
+    }
+    _ui->splitByChannelCheckbox->setChecked(_settings->value("ARGS/SplitByChannel").toBool());
+    _ui->writeWaveformCheckbox->setChecked(_settings->value("ARGS/WriteWaveform").toBool());
+    _ui->calcEchoWidthCheckbox->setChecked(_settings->value("ARGS/CalcEchoWidth").toBool());
+    _ui->fullwaveNoiseCheckbox->setChecked(_settings->value("ARGS/FullwaveNoise").toBool());
+    _ui->fixedIncidenceAngleCheckbox->setChecked(_settings->value("ARGS/FixedIncidenceAngle").toBool());
+    _ui->disablePlatformNoiseCheckbox->setChecked(_settings->value("ARGS/DisablePlatformNoise").toBool());
+    _ui->disableLegNoiseCheckbox->setChecked(_settings->value("ARGS/DisableLegNoise").toBool());
+    if (_settings->value("ARGS/Seed").toString() == "default")
+    {
+        _ui->seedCheckbox->setChecked(false);
+    }
+    else
+    {
+        _ui->seedCheckbox->setChecked(true);
+        _ui->seedEdit->setText(_settings->value("ARGS/Seed").toString());
+    }
+    if (_settings->value("ARGS/GpsStartTime").toString() == "default")
+    {
+        _ui->gpsStartTimeCheckbox->setChecked(false);
+    }
+    else
+    {
+        _ui->gpsStartTimeCheckbox->setChecked(true);
+        _ui->gpsStartTimeEdit->setText(_settings->value("ARGS/GpsStartTime").toString());
+    }
+    _ui->logFileCheckbox->setChecked(_settings->value("ARGS/LogFile").toBool());
+    _ui->logFileOnlyCheckbox->setChecked(_settings->value("ARGS/LogFileOnly").toBool());
+    _ui->silentCheckbox->setChecked(_settings->value("ARGS/Silent").toBool());
+    _ui->quietCheckbox->setChecked(_settings->value("ARGS/Quiet").toBool());
+    _ui->vtCheckbox->setChecked(_settings->value("ARGS/Vt").toBool());
+    _ui->vCheckbox->setChecked(_settings->value("ARGS/V").toBool());
+    _ui->vvCheckbox->setChecked(_settings->value("ARGS/VV").toBool());
+    _ui->rebuildSceneCheckbox->setChecked(_settings->value("ARGS/RebuildScene").toBool());
+    if (_settings->value("ARGS/KDTree").toString() == "default")
+    {
+        _ui->kdtTypeCheckbox->setChecked(false);
+    }
+    else
+    {
+        _ui->kdtTypeCheckbox->setChecked(true);
+        if (_settings->value("ARGS/KDTree").toInt() == 1)
+        {
+            _ui->medianBalancingButton->setChecked(true);
+            _ui->SAHButton->setChecked(false);
+            _ui->SAHbestAxisButton->setChecked(false);
+            _ui->fastSAHButton->setChecked(false);
+        }
+        else if (_settings->value("ARGS/KDTree").toInt() == 2)
+        {
+            _ui->medianBalancingButton->setChecked(false);
+            _ui->SAHButton->setChecked(true);
+            _ui->SAHbestAxisButton->setChecked(false);
+            _ui->fastSAHButton->setChecked(false);
+        }
+        else if (_settings->value("ARGS/KDTree").toInt() == 3)
+        {
+            _ui->medianBalancingButton->setChecked(false);
+            _ui->SAHButton->setChecked(false);
+            _ui->SAHbestAxisButton->setChecked(true);
+            _ui->fastSAHButton->setChecked(false);
+        }
+        else if (_settings->value("ARGS/KDTree").toInt() == 4)
+        {
+            _ui->medianBalancingButton->setChecked(false);
+            _ui->SAHButton->setChecked(false);
+            _ui->SAHbestAxisButton->setChecked(false);
+            _ui->fastSAHButton->setChecked(true);
+        }
+    }
+    if (_settings->value("ARGS/KDTreeThreads").toString() == "default")
+    {
+        _ui->kdtThreadsCheckbox->setChecked(false);
+    }
+    else
+    {
+        _ui->kdtThreadsCheckbox->setChecked(true);
+        _ui->kdtThreadsSpinbox->setValue(_settings->value("ARGS/KDTreeThreads").toInt());
+    }
+    if (_settings->value("ARGS/KDTreeGeomThreads").toString() == "default")
+    {
+        _ui->kdtGeomThreadsCheckbox->setChecked(false);
+    }
+    else
+    {
+        _ui->kdtGeomThreadsCheckbox->setChecked(true);
+        _ui->kdtGeomThreadsSpinbox->setValue(_settings->value("ARGS/KDTreeGeomThreads").toInt());
+    }
+    if (_settings->value("ARGS/SAHnodes").toString() == "default")
+    {
+        _ui->SAHnodesCheckbox->setChecked(false);
+    }
+    else
+    {
+        _ui->SAHnodesCheckbox->setChecked(true);
+        _ui->SAHnodesSpinbox->setValue(_settings->value("ARGS/SAHnodes").toInt());
+    }
+    _ui->unzipCheckbox->setChecked(_settings->value("ARGS/Unzip").toBool());
+    _ui->unzipInputEdit->setText(_settings->value("ARGS/UnzipInput").toString());
+    _ui->unzipOutputEdit->setText(_settings->value("ARGS/UnzipOutput").toString());
+    _ui->assetsCheckbox->setChecked(_settings->value("ARGS/AssetsPathFlag").toBool());
+    _ui->assetsEdit->setText(_settings->value("ARGS/AssetsPath").toString());
+    _ui->outputCheckbox->setChecked(_settings->value("ARGS/OutputPathFlag").toBool());
+    _ui->outputEdit->setText(_settings->value("ARGS/OutputPath").toString());
+    _ui->liveTrajectoryPlotCheckbox->setChecked(_settings->value("ARGS/LiveTrajectoryPlot").toBool());
+    _ui->polyscopeCheckbox->setChecked(_settings->value("ARGS/Polyscope").toBool());
+    _ui->open3dCheckbox->setChecked(_settings->value("ARGS/Open3D").toBool());
+
 
     // disable options when unchecked
     _ui->heliospyBox->setDisabled(_ui->defaultModeButton->isChecked());
@@ -126,18 +292,230 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
 
     // clang-format off
 
-    // write execution mode to settings in real time
+    // when changing options, write to settings in real time
+    QObject::connect(_ui->heliosBaseDirLineEdit, &QLineEdit::textChanged, this, &Launcher::writeHeliosBaseDirToSettings);
+    QObject::connect(_ui->surveyPathLineEdit, &QLineEdit::textChanged, this, &Launcher::writeLastSurveyToSettings);
     QObject::connect(_ui->defaultModeButton, &QRadioButton::toggled, this, &Launcher::writeExecModeToSettings);
     QObject::connect(_ui->heliospyModeButton, &QRadioButton::toggled, this, &Launcher::writeExecModeToSettings);
+    QObject::connect(_ui->runOptionButton, &QRadioButton::toggled, this, &Launcher::writeGeneralToSettings);
+    QObject::connect(_ui->helpButton, &QRadioButton::toggled, this, &Launcher::writeGeneralToSettings);
+    QObject::connect(_ui->versionButton, &QRadioButton::toggled, this, &Launcher::writeGeneralToSettings);
+    QObject::connect(_ui->testButton, &QRadioButton::toggled, this, &Launcher::writeGeneralToSettings);
+    QObject::connect(_ui->asciiButton, &QRadioButton::toggled, this, &Launcher::writeOutputToSettings);
+    QObject::connect(_ui->lasButton, &QRadioButton::toggled, this, &Launcher::writeOutputToSettings);
+    QObject::connect(_ui->las10Button, &QRadioButton::toggled, this, &Launcher::writeOutputToSettings);
+    QObject::connect(_ui->zipOutputButton, &QCheckBox::toggled, [this](bool checked)
+                    {
+                        _settings->setValue("ARGS/ZipOutput", checked);
+                    });
+    QObject::connect(_ui->lasScaleCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                        _settings->setValue("ARGS/LasScale", checked ? QString::number(_ui->lasScaleSpinbox->value()) : "default");
+                    });
+    QObject::connect(_ui->lasScaleSpinbox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [this](float value)
+                    {
+                            _settings->setValue("ARGS/LasScale", QString::number(value));
+                    });
+    QObject::connect(_ui->strategyCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                        if (checked)
+                        {
+                            _settings->setValue("ARGS/Parallelization", _ui->staticDynamicChunkButton->isChecked() ? "0" : "1");
+                        }
+                        else
+                        {
+                            _settings->setValue("ARGS/Parallelization", "default");
+                        }
+                    });
+    QObject::connect(_ui->staticDynamicChunkButton, &QRadioButton::toggled, [this](bool checked)
+                    {
+                            _settings->setValue("ARGS/Parallelization", checked ? "0" : "1");
+                    });
+    QObject::connect(_ui->warehousButton, &QRadioButton::toggled, [this](bool checked)
+                    {
+                            _settings->setValue("ARGS/Parallelization", checked ? "1" : "0");
+                    });
+    QObject::connect(_ui->nthreadCheckbox, &QCheckBox::toggled, this, &Launcher::writeNThreadsToSettings);
+    QObject::connect(_ui->nthreadSlider, &QSlider::valueChanged, this, &Launcher::writeNThreadsToSettings);
+    QObject::connect(_ui->nthreadSpinbox, QOverload<int>::of(&QSpinBox::valueChanged), this, &Launcher::writeNThreadsToSettings);
+    QObject::connect(_ui->chunkSizeCheckbox, &QCheckBox::toggled, this, &Launcher::writeChunkSizeToSettings);
+    QObject::connect(_ui->chunkSizeSlider, &QSlider::valueChanged, this, &Launcher::writeChunkSizeToSettings);
+    QObject::connect(_ui->chunkSizeSpinbox, QOverload<int>::of(&QSpinBox::valueChanged), this, &Launcher::writeChunkSizeToSettings);
+    QObject::connect(_ui->warehouseFactorCheckbox, &QCheckBox::toggled, this, &Launcher::writeWarehouseFactorToSettings);
+    QObject::connect(_ui->warehouseFactorSlider, &QSlider::valueChanged, this, &Launcher::writeWarehouseFactorToSettings);
+    QObject::connect(_ui->warehouseFactorSpinbox, QOverload<int>::of(&QSpinBox::valueChanged), this, &Launcher::writeWarehouseFactorToSettings);
+    QObject::connect(_ui->splitByChannelCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                        _settings->setValue("ARGS/SplitByChannel", checked);
+                    });
+    QObject::connect(_ui->writeWaveformCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                            _settings->setValue("ARGS/WriteWaveform", checked);
+                    });
+    QObject::connect(_ui->calcEchoWidthCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                            _settings->setValue("ARGS/CalcEchoWidth", checked);
+                    });
+    QObject::connect(_ui->fullwaveNoiseCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                            _settings->setValue("ARGS/FullwaveNoise", checked);
+                    });
+    QObject::connect(_ui->fixedIncidenceAngleCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                            _settings->setValue("ARGS/FixedIncidenceAngle", checked);
+                    });
+    QObject::connect(_ui->disablePlatformNoiseCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                            _settings->setValue("ARGS/DisablePlatformNoise", checked);
+                    });
+    QObject::connect(_ui->disableLegNoiseCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                            _settings->setValue("ARGS/DisableLegNoise", checked);
+                    });
+    QObject::connect(_ui->seedCheckbox, &QCheckBox::toggled, this, &Launcher::writeSeedToSettings);
+    QObject::connect(_ui->seedEdit, &QLineEdit::textChanged, this, &Launcher::writeSeedToSettings);
+    QObject::connect(_ui->gpsStartTimeCheckbox, &QCheckBox::toggled, this, &Launcher::writeGpsStartTimeToSettings);
+    QObject::connect(_ui->gpsStartTimeEdit, &QLineEdit::textChanged, this, &Launcher::writeGpsStartTimeToSettings);
+    QObject::connect(_ui->logFileCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                            _settings->setValue("ARGS/LogFile", checked);
+                    });
+    QObject::connect(_ui->logFileOnlyCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                            _settings->setValue("ARGS/LogFileOnly", checked);
+                    });
+    QObject::connect(_ui->silentCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                            _settings->setValue("ARGS/Silent", checked);
+                    });
+    QObject::connect(_ui->quietCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                            _settings->setValue("ARGS/Quiet", checked);
+                    });
+    QObject::connect(_ui->vtCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                            _settings->setValue("ARGS/Vt", checked);
+                    });
+    QObject::connect(_ui->vCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                            _settings->setValue("ARGS/V", checked);
+                    });
+    QObject::connect(_ui->vvCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                            _settings->setValue("ARGS/VV", checked);
+                    });
+    QObject::connect(_ui->rebuildSceneCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                            _settings->setValue("ARGS/RebuildScene", checked);
+                    });
+    QObject::connect(_ui->kdtTypeCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                        if (checked)
+                        {
+                            if (_ui->medianBalancingButton->isChecked())
+                            {
+                                _settings->setValue("ARGS/KDTree", 1);
+                            }
+                            else if (_ui->SAHButton->isChecked())
+                            {
+                                _settings->setValue("ARGS/KDTree", 2);
+                            }
+                            else if (_ui->SAHbestAxisButton->isChecked())
+                            {
+                                _settings->setValue("ARGS/KDTree", 3);
+                            }
+                            else if (_ui->fastSAHButton->isChecked())
+                            {
+                                _settings->setValue("ARGS/KDTree", 4);
+                            }
+                        }
+                        else
+                        {
+                            _settings->setValue("ARGS/KDTree", "default");
+                        }
+                    });
+    QObject::connect(_ui->medianBalancingButton, &QRadioButton::toggled, [this](bool checked)
+                    {
+                        if (checked)
+                        {
+                            _settings->setValue("ARGS/KDTree", 1);
+                        }
+                    });
+    QObject::connect(_ui->SAHButton, &QRadioButton::toggled, [this](bool checked)
+                    {
+                        if (checked)
+                        {
+                            _settings->setValue("ARGS/KDTree", 2);
+                        }
+                    });
+    QObject::connect(_ui->SAHbestAxisButton, &QRadioButton::toggled, [this](bool checked)
+                    {
+                        if (checked)
+                        {
+                            _settings->setValue("ARGS/KDTree", 3);
+                        }
+                    });
+    QObject::connect(_ui->fastSAHButton, &QRadioButton::toggled, [this](bool checked)
+                    {
+                        if (checked)
+                        {
+                            _settings->setValue("ARGS/KDTree", 4);
+                        }
+                    });
+    QObject::connect(_ui->kdtThreadsCheckbox, &QCheckBox::toggled, this, &Launcher::writeKDTreeThreadsToSettings);
+    QObject::connect(_ui->kdtThreadsSlider, &QSlider::valueChanged, this, &Launcher::writeKDTreeThreadsToSettings);
+    QObject::connect(_ui->kdtThreadsSpinbox, QOverload<int>::of(&QSpinBox::valueChanged), this, &Launcher::writeKDTreeThreadsToSettings);
+    QObject::connect(_ui->kdtGeomThreadsCheckbox, &QCheckBox::toggled, this, &Launcher::writeKDTreeGeomThreadsToSettings);
+    QObject::connect(_ui->kdtGeomThreadsSlider, &QSlider::valueChanged, this, &Launcher::writeKDTreeGeomThreadsToSettings);
+    QObject::connect(_ui->kdtGeomThreadsSpinbox, QOverload<int>::of(&QSpinBox::valueChanged), this, &Launcher::writeKDTreeGeomThreadsToSettings);
+    QObject::connect(_ui->SAHnodesCheckbox, &QCheckBox::toggled, this, &Launcher::writeSAHnodesToSettings);
+    QObject::connect(_ui->SAHnodesSlider, &QSlider::valueChanged, this, &Launcher::writeSAHnodesToSettings);
+    QObject::connect(_ui->SAHnodesSpinbox, QOverload<int>::of(&QSpinBox::valueChanged), this, &Launcher::writeSAHnodesToSettings);
+    QObject::connect(_ui->unzipCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                        _settings->setValue("ARGS/Unzip", checked);
+                    });
+    QObject::connect(_ui->unzipInputEdit, &QLineEdit::textChanged, [this](const QString& text)
+                    {
+                        _settings->setValue("ARGS/UnzipInput", text);
+                    });
+    QObject::connect(_ui->unzipOutputEdit, &QLineEdit::textChanged, [this](const QString& text)
+                    {
+                        _settings->setValue("ARGS/UnzipOutput", text);
+                    });
+    QObject::connect(_ui->assetsCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                        _settings->setValue("ARGS/AssetsPathFlag", checked);
+                    });
+    QObject::connect(_ui->assetsEdit, &QLineEdit::textChanged, [this](const QString& text)
+                    {
+                        _settings->setValue("ARGS/AssetsPath", text);
+                    });
+    QObject::connect(_ui->outputCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                        _settings->setValue("ARGS/OutputPathFlag", checked);
+                    });
+    QObject::connect(_ui->outputEdit, &QLineEdit::textChanged, [this](const QString& text)
+                    {
+                        _settings->setValue("ARGS/OutputPath", text);
+                    });
+    QObject::connect(_ui->liveTrajectoryPlotCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                        _settings->setValue("ARGS/LiveTrajectoryPlot", checked);
+                    });
+    QObject::connect(_ui->polyscopeCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                        _settings->setValue("ARGS/Polyscope", checked);
+                    });
+    QObject::connect(_ui->open3dCheckbox, &QCheckBox::toggled, [this](bool checked)
+                    {
+                        _settings->setValue("ARGS/Open3D", checked);
+                    });
 
     // update command browser in real time when helios base directory, survey.xml or arguments change
     QObject::connect(_ui->heliosBaseDirLineEdit, &QLineEdit::textChanged, this, &Launcher::updateCmd);
     QObject::connect(_ui->surveyPathLineEdit, &QLineEdit::textChanged, this, &Launcher::updateCmd);
     QObject::connect(_ui->argsEditor, &QPlainTextEdit::textChanged, this, &Launcher::updateCmd);
-
-    // when changing the helios base directory, survey.xml or optional arguments, instantly save new values to settings
-    QObject::connect(_ui->heliosBaseDirLineEdit, &QLineEdit::editingFinished, this, &Launcher::writeHeliosBaseDirToSettings);
-    QObject::connect(_ui->surveyPathLineEdit, &QLineEdit::editingFinished, this, &Launcher::writeLastSurveyToSettings);
 
     // Button functions
 
@@ -234,18 +612,94 @@ Launcher::~Launcher()
     this->writeHeliosBaseDirToSettings();
     this->writeLastSurveyToSettings();
     this->writeExecModeToSettings();
-    auto args = _ui->argsEditor->toPlainText().split(QRegExp("[\\s\n]+"));
-    _settings->beginWriteArray("ARGS");
-    for (int i = 0; i < args.size(); i++)
+    this->writeGeneralToSettings();
+    this->writeOutputToSettings();
+    _settings->setValue("ARGS/ZipOutput", _ui->zipOutputButton->isChecked());
+    if (!_ui->lasScaleCheckbox->isChecked())
     {
-        if (args.at(i).isEmpty())
-        {
-            continue;
-        }
-        _settings->setArrayIndex(i);
-        _settings->setValue("arg", args.at(i));
+        _settings->setValue("ARGS/LasScale", "default");
     }
-    _settings->endArray();
+    else
+    {
+        _settings->setValue("ARGS/LasScale", _ui->lasScaleSpinbox->value());
+    }
+    if (!_ui->strategyCheckbox->isChecked())
+    {
+        _settings->setValue("ARGS/Parallelization", "default");
+    }
+    else
+    {
+        _settings->setValue("ARGS/Parallelization", _ui->staticDynamicChunkButton->isChecked() ? "0" : "1");
+    }
+    this->writeNThreadsToSettings();
+    this->writeChunkSizeToSettings();
+    this->writeWarehouseFactorToSettings();
+    _settings->setValue("ARGS/SplitByChannel", _ui->splitByChannelCheckbox->isChecked());
+    _settings->setValue("ARGS/WriteWaveform", _ui->writeWaveformCheckbox->isChecked());
+    _settings->setValue("ARGS/CalcEchoWidth", _ui->calcEchoWidthCheckbox->isChecked());
+    _settings->setValue("ARGS/FullwaveNoise", _ui->fullwaveNoiseCheckbox->isChecked());
+    _settings->setValue("ARGS/FixedIncidenceAngle", _ui->fixedIncidenceAngleCheckbox->isChecked());
+    _settings->setValue("ARGS/DisablePlatformNoise", _ui->disablePlatformNoiseCheckbox->isChecked());
+    _settings->setValue("ARGS/DisableLegNoise", _ui->disableLegNoiseCheckbox->isChecked());
+    this->writeSeedToSettings();
+    this->writeGpsStartTimeToSettings();
+    _settings->setValue("ARGS/LogFile", _ui->logFileCheckbox->isChecked());
+    _settings->setValue("ARGS/LogFileOnly", _ui->logFileOnlyCheckbox->isChecked());
+    _settings->setValue("ARGS/Silent", _ui->silentCheckbox->isChecked());
+    _settings->setValue("ARGS/Quiet", _ui->quietCheckbox->isChecked());
+    _settings->setValue("ARGS/Vt", _ui->vtCheckbox->isChecked());
+    _settings->setValue("ARGS/V", _ui->vCheckbox->isChecked());
+    _settings->setValue("ARGS/VV", _ui->vvCheckbox->isChecked());
+    _settings->setValue("ARGS/RebuildScene", _ui->rebuildSceneCheckbox->isChecked());
+    if (!_ui->kdtTypeCheckbox->isChecked())
+    {
+        _settings->setValue("ARGS/KDTree", "default");
+    }
+    else
+    {
+        if (_ui->medianBalancingButton->isChecked())
+        {
+            _settings->setValue("ARGS/KDTree", 1);
+        }
+        else if (_ui->SAHButton->isChecked())
+        {
+            _settings->setValue("ARGS/KDTree", 2);
+        }
+        else if (_ui->SAHbestAxisButton->isChecked())
+        {
+            _settings->setValue("ARGS/KDTree", 3);
+        }
+        else if (_ui->fastSAHButton->isChecked())
+        {
+            _settings->setValue("ARGS/KDTree", 4);
+        }
+    }
+    this->writeKDTreeThreadsToSettings();
+    this->writeKDTreeGeomThreadsToSettings();
+    this->writeSAHnodesToSettings();
+    _settings->setValue("ARGS/Unzip", _ui->unzipCheckbox->isChecked());
+    _settings->setValue("ARGS/UnzipInput", _ui->unzipInputEdit->text());
+    _settings->setValue("ARGS/UnzipOutput", _ui->unzipOutputEdit->text());
+    _settings->setValue("ARGS/AssetsPathFlag", _ui->assetsCheckbox->isChecked());
+    _settings->setValue("ARGS/AssetsPath", _ui->assetsEdit->text());
+    _settings->setValue("ARGS/OutputPathFlag", _ui->outputCheckbox->isChecked());
+    _settings->setValue("ARGS/OutputPath", _ui->outputEdit->text());
+    _settings->setValue("ARGS/LiveTrajectoryPlot", _ui->liveTrajectoryPlotCheckbox->isChecked());
+    _settings->setValue("ARGS/Polyscope", _ui->polyscopeCheckbox->isChecked());
+    _settings->setValue("ARGS/Open3D", _ui->open3dCheckbox->isChecked());
+
+    //    auto args = _ui->argsEditor->toPlainText().split(QRegExp("[\\s\n]+"));
+    //    _settings->beginWriteArray("ARGS");
+    //    for (int i = 0; i < args.size(); i++)
+    //    {
+    //        if (args.at(i).isEmpty())
+    //        {
+    //            continue;
+    //        }
+    //        _settings->setArrayIndex(i);
+    //        _settings->setValue("arg", args.at(i));
+    //    }
+    //    _settings->endArray();
     _process.close();
     delete _ui;
 }
@@ -289,6 +743,139 @@ void Launcher::writeExecModeToSettings()
         _settings->setValue("MODE/ExecMode", "");
     }
     this->updateCmd();
+}
+
+void Launcher::writeGeneralToSettings()
+{
+    if (_ui->runOptionButton->isChecked())
+    {
+        _settings->setValue("ARGS/General", "");
+    }
+    else if (_ui->helpButton->isChecked())
+    {
+        _settings->setValue("ARGS/General", "--help");
+    }
+    else if (_ui->versionButton->isChecked())
+    {
+        _settings->setValue("ARGS/General", "--version");
+    }
+    else if (_ui->testButton->isChecked())
+    {
+        _settings->setValue("ARGS/General", "--test");
+    }
+}
+
+void Launcher::writeOutputToSettings()
+{
+    if (_ui->asciiButton->isChecked())
+    {
+        _settings->setValue("ARGS/Output", "");
+    }
+    else if (_ui->lasButton->isChecked())
+    {
+        _settings->setValue("ARGS/Output", "--lasOutput");
+    }
+    else if (_ui->las10Button->isChecked())
+    {
+        _settings->setValue("ARGS/Output", "--las10");
+    }
+}
+
+void Launcher::writeNThreadsToSettings()
+{
+    if (_ui->nthreadCheckbox->isChecked())
+    {
+        _settings->setValue("ARGS/nthreads", _ui->nthreadSpinbox->value());
+    }
+    else
+    {
+        _settings->setValue("ARGS/nthreads", "default");
+    }
+}
+
+void Launcher::writeChunkSizeToSettings()
+{
+    if (_ui->chunkSizeCheckbox->isChecked())
+    {
+        _settings->setValue("ARGS/ChunkSize", _ui->chunkSizeSpinbox->value());
+    }
+    else
+    {
+        _settings->setValue("ARGS/ChunkSize", "default");
+    }
+}
+
+void Launcher::writeWarehouseFactorToSettings()
+{
+    if (_ui->warehouseFactorCheckbox->isChecked())
+    {
+        _settings->setValue("ARGS/WarehouseFactor", _ui->warehouseFactorSpinbox->value());
+    }
+    else
+    {
+        _settings->setValue("ARGS/WarehouseFactor", "default");
+    }
+}
+
+void Launcher::writeSeedToSettings()
+{
+    if (_ui->seedCheckbox->isChecked())
+    {
+        _settings->setValue("ARGS/Seed", _ui->seedEdit->text());
+    }
+    else
+    {
+        _settings->setValue("ARGS/Seed", "default");
+    }
+}
+
+void Launcher::writeGpsStartTimeToSettings()
+{
+    if (_ui->gpsStartTimeCheckbox->isChecked())
+    {
+        _settings->setValue("ARGS/GpsStartTime", _ui->gpsStartTimeEdit->text());
+    }
+    else
+    {
+        _settings->setValue("ARGS/GpsStartTime", "default");
+    }
+}
+
+void Launcher::writeKDTreeThreadsToSettings()
+{
+    if (_ui->kdtThreadsCheckbox->isChecked())
+    {
+        _settings->setValue("ARGS/KDTreeThreads", _ui->kdtThreadsSpinbox->value());
+    }
+    else
+    {
+        _settings->setValue("ARGS/KDTreeThreads", "default");
+    }
+}
+
+void Launcher::writeKDTreeGeomThreadsToSettings()
+{
+    if (_ui->kdtGeomThreadsCheckbox->isChecked())
+    {
+        _settings->setValue("ARGS/KDTreeGeomThreads", _ui->kdtGeomThreadsSpinbox->value());
+    }
+    else
+    {
+        _settings->setValue("ARGS/KDTreeGeomThreads", "default");
+    }
+}
+
+void Launcher::writeSAHnodesToSettings()
+{
+    if (_ui->SAHnodesCheckbox->isChecked())
+    {
+        _settings->setValue("ARGS/SAHnodes", _ui->SAHnodesSpinbox->value());
+    }
+    else
+    {
+        _settings->setValue("ARGS/SAHnodes", "default");
+    }
+
 }
 
 void Launcher::updateCmd()
