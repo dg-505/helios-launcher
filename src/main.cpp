@@ -13,8 +13,8 @@ auto main(int argc, char* argv[]) -> int
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 
-    const QApplication launcherApp(argc, argv);
     QApplication::setStyle("fusion");
+    const QApplication launcherApp(argc, argv);
 
     // settings to preserve between sessions
     // default location on Linux: ~/.config/heliospp/helios-launcher.ini

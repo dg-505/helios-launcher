@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>Launcher</class>
  <widget class="QMainWindow" name="Launcher">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1392</width>
-    <height>823</height>
-   </rect>
-  </property>
   <property name="windowIcon">
    <iconset resource="../res/resources.qrc">
     <normaloff>:/heliospp.png</normaloff>:/heliospp.png</iconset>

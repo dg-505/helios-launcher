@@ -21,6 +21,10 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     this->setWindowIcon(QIcon(":/heliospp.png"));
     this->setWindowTitle("HELIOS++ launcher version " + QString::fromStdString(version));
     _ui->settingsWidget->layout()->setAlignment(Qt::AlignTop);
+#ifdef _WIN32
+    _ui->assetsEdit->setPlaceholderText(_ui->assetsEdit->placeholderText().replace("/", "\\"));
+    _ui->outputEdit->setPlaceholderText(_ui->outputEdit->placeholderText().replace("/", "\\"));
+#endif
 
     // Some options are only available in default mode, not in helios.py mode (according to the "--help" outputs of both)
     QObject::connect(_ui->defaultModeButton, &QRadioButton::toggled, this, [this]()
@@ -224,6 +228,10 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     _ui->unzipCheckbox->setChecked(_settings->value("ARGS/Unzip").toBool());
     _ui->unzipInputEdit->setText(_settings->value("ARGS/UnzipInput").toString());
     _ui->unzipOutputEdit->setText(_settings->value("ARGS/UnzipOutput").toString());
+#ifdef _WIN32
+    _ui->unzipInputEdit->setText(_ui->unzipInputEdit->text().replace("/", "\\"));
+    _ui->unzipOutputEdit->setText(_ui->unzipOutputEdit->text().replace("/", "\\"));
+#endif
     _ui->assetsCheckbox->setChecked(_settings->value("ARGS/AssetsPathFlag").toBool());
     _ui->assetsEdit->setText(_settings->value("ARGS/AssetsPath").toString());
     _ui->outputCheckbox->setChecked(_settings->value("ARGS/OutputPathFlag").toBool());
@@ -477,11 +485,25 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                     });
     QObject::connect(_ui->unzipInputEdit, &QLineEdit::textChanged, [this](const QString& text)
                     {
-                        _settings->setValue("ARGS/UnzipInput", text);
+#ifdef _WIN32
+                        _ui->unzipInputEdit->setText(_ui->unzipInputEdit->text().replace("/", "\\"));
+#endif
+                        if (_ui->unzipInputEdit->text().startsWith(_ui->heliosBaseDirLineEdit->text()))
+                        {
+                            _ui->unzipInputEdit->setText(_ui->unzipInputEdit->text().replace(_ui->heliosBaseDirLineEdit->text(), "."));
+                        }
+                        _settings->setValue("ARGS/UnzipInput", _ui->unzipInputEdit->text());
                     });
     QObject::connect(_ui->unzipOutputEdit, &QLineEdit::textChanged, [this](const QString& text)
                     {
-                        _settings->setValue("ARGS/UnzipOutput", text);
+#ifdef _WIN32
+                        _ui->unzipOutputEdit->setText(_ui->unzipOutputEdit->text().replace("/", "\\"));
+#endif
+                        if (_ui->unzipOutputEdit->text().startsWith(_ui->heliosBaseDirLineEdit->text()))
+                        {
+                            _ui->unzipOutputEdit->setText(_ui->unzipOutputEdit->text().replace(_ui->heliosBaseDirLineEdit->text(), "."));
+                        }
+                        _settings->setValue("ARGS/UnzipOutput", _ui->unzipOutputEdit->text());
                     });
     QObject::connect(_ui->assetsCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
@@ -489,7 +511,14 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                     });
     QObject::connect(_ui->assetsEdit, &QLineEdit::textChanged, [this](const QString& text)
                     {
-                        _settings->setValue("ARGS/AssetsPath", text);
+#ifdef _WIN32
+                        _ui->assetsEdit->setText(_ui->assetsEdit->text().replace("/", "\\"));
+#endif
+                        if (_ui->assetsEdit->text().startsWith(_ui->heliosBaseDirLineEdit->text()))
+                        {
+                            _ui->assetsEdit->setText(_ui->assetsEdit->text().replace(_ui->heliosBaseDirLineEdit->text(), "."));
+                        }
+                        _settings->setValue("ARGS/AssetsPath", _ui->assetsEdit->text());
                     });
     QObject::connect(_ui->outputCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
@@ -497,7 +526,14 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                     });
     QObject::connect(_ui->outputEdit, &QLineEdit::textChanged, [this](const QString& text)
                     {
-                        _settings->setValue("ARGS/OutputPath", text);
+#ifdef _WIN32
+                        _ui->outputEdit->setText(_ui->outputEdit->text().replace("/", "\\"));
+#endif
+                        if (_ui->outputEdit->text().startsWith(_ui->heliosBaseDirLineEdit->text()))
+                        {
+                            _ui->outputEdit->setText(_ui->outputEdit->text().replace(_ui->heliosBaseDirLineEdit->text(), "."));
+                        }
+                        _settings->setValue("ARGS/OutputPath", _ui->outputEdit->text());
                     });
     QObject::connect(_ui->liveTrajectoryPlotCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
@@ -536,6 +572,126 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                         {
                             _ui->surveyPathLineEdit->setText(survey);
                             this->writeLastSurveyToSettings();
+                        }
+                    });
+
+    // browse buttons @ path arguments section
+    QObject::connect(_ui->unzipInputBrowseButton, &QPushButton::clicked, this, [this]()
+                    {
+                        QString last = _settings->value("ARGS/UnzipInput").toString();
+                        if (last.isEmpty())
+                        {
+                            if (QDir(_outputDir).exists())
+                            {
+                                last = _outputDir;
+                            }
+                            else
+                            {
+                                last = _settings->value("DIRS/HeliosBaseDir").toString();
+                            }
+                        }
+                        else if (last.startsWith("."))
+                        {
+                            last.remove(0, 1);
+                            last = _settings->value("DIRS/HeliosBaseDir").toString() + last;
+                        }
+                        if (!QFile(last).exists())
+                        {
+                            last = _settings->value("DIRS/HeliosBaseDir").toString();
+                        }
+                        QString unzipInputFile = QFileDialog::getOpenFileName(this, tr("Select file to decompress"), last);
+                        if (!unzipInputFile.isEmpty())
+                        {
+                            if (unzipInputFile.startsWith(_settings->value("DIRS/HeliosBaseDir").toString()))
+                            {
+                                unzipInputFile.replace(_settings->value("DIRS/HeliosBaseDir").toString(), ".");
+                            }
+                            _ui->unzipInputEdit->setText(unzipInputFile);
+                            _settings->setValue("ARGS/UnzipInput", _ui->unzipInputEdit->text());
+                        }
+                    });
+        QObject::connect(_ui->unzipOutputBrowseButton, &QPushButton::clicked, this, [this]()
+                    {
+                        QString last = _settings->value("ARGS/UnzipOutput").toString();
+                        if (last.isEmpty())
+                        {
+                            if (_ui->unzipInputEdit->text().isEmpty())
+                            {
+                                last = _settings->value("DIRS/HeliosBaseDir").toString();
+                            }
+                            else
+                            {
+                                last = QFileInfo(_ui->unzipInputEdit->text()).path();
+                            }
+                        }
+                        if (last.startsWith("."))
+                        {
+                            last.remove(0, 1);
+                            last = _settings->value("DIRS/HeliosBaseDir").toString() + last;
+                        }
+                        QString unzipOutputFile = QFileDialog::getSaveFileName(this, tr("Specify target folder for decompression"), last);
+                        if (!unzipOutputFile.isEmpty())
+                        {
+                            if (unzipOutputFile.startsWith(_settings->value("DIRS/HeliosBaseDir").toString()))
+                            {
+                                unzipOutputFile.replace(_settings->value("DIRS/HeliosBaseDir").toString(), ".");
+                            }
+                            _ui->unzipOutputEdit->setText(unzipOutputFile);
+                            _settings->setValue("ARGS/UnzipOutput", _ui->unzipOutputEdit->text());
+                        }
+                    });
+        QObject::connect(_ui->assetsBrowseButton, &QPushButton::clicked, this, [this]()
+                    {
+                        QString last = _settings->value("ARGS/AssetsPath").toString();
+                        if (last.isEmpty())
+                        {
+                            last = _settings->value("DIRS/HeliosBaseDir").toString() + "/assets/";
+                        }
+                        else if (last.startsWith("."))
+                        {
+                            last.remove(0, 1);
+                            last = _settings->value("DIRS/HeliosBaseDir").toString() + last;
+                        }
+                        if (!QDir(last).exists())
+                        {
+                            last = _settings->value("DIRS/HeliosBaseDir").toString();
+                        }
+                        QString assetsPath = QFileDialog::getExistingDirectory(this, tr("Select assets path"), last);
+                        if (!assetsPath.isEmpty())
+                        {
+                            if (assetsPath.startsWith(_settings->value("DIRS/HeliosBaseDir").toString()))
+                            {
+                                assetsPath.replace(_settings->value("DIRS/HeliosBaseDir").toString(), ".");
+                            }
+                            _ui->assetsEdit->setText(assetsPath);
+                            _settings->setValue("ARGS/AssetsPath", _ui->assetsEdit->text());
+                        }
+                    });
+        QObject::connect(_ui->outputBrowseButton, &QPushButton::clicked, this, [this]()
+                    {
+                        QString last = _settings->value("ARGS/OutputPath").toString();
+                        if (last.isEmpty())
+                        {
+                            last = _settings->value("DIRS/HeliosBaseDir").toString() + "/output/";
+                        }
+                        else if (last.startsWith("."))
+                        {
+                            last.remove(0, 1);
+                            last = _settings->value("DIRS/HeliosBaseDir").toString() + last;
+                        }
+                        if (!QDir(last).exists())
+                        {
+                            last = _settings->value("DIRS/HeliosBaseDir").toString();
+                        }
+                        QString outputPath = QFileDialog::getExistingDirectory(this, tr("Select output path"), last);
+                        if (!outputPath.isEmpty())
+                        {
+                            if (outputPath.startsWith(_settings->value("DIRS/HeliosBaseDir").toString()))
+                            {
+                                outputPath.replace(_settings->value("DIRS/HeliosBaseDir").toString(), ".");
+                            }
+                            _ui->outputEdit->setText(outputPath);
+                            _settings->setValue("ARGS/OutputPath", _ui->outputEdit->text());
                         }
                     });
 
