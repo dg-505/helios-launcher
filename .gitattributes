@@ -1,0 +1,10 @@
+# Set 'lf' line endings for all text files
+* text=auto eol=lf
+
+# Set 'crlf' line endings specifically for the batch file
+*.bat text eol=crlf
+*.iss text eol=crlf
+
+# Specify binary files
+*.bmp binary
+*.png binary
