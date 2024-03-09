@@ -21,6 +21,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     this->setWindowIcon(QIcon(":/heliospp.png"));
     this->setWindowTitle("HELIOS++ launcher version " + QString::fromStdString(version));
     _ui->settingsWidget->layout()->setAlignment(Qt::AlignTop);
+    _ui->optionsTabs->setCurrentIndex(_settings->value("MISC/CurrentTab").toInt());
 #ifdef _WIN32
     _ui->assetsEdit->setPlaceholderText(_ui->assetsEdit->placeholderText().replace("/", "\\"));
     _ui->outputEdit->setPlaceholderText(_ui->outputEdit->placeholderText().replace("/", "\\"));
@@ -61,8 +62,8 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     _ui->heliosBaseDirLineEdit->setText(_ui->heliosBaseDirLineEdit->text().replace("/", "\\"));
     _ui->surveyPathLineEdit->setText(_ui->surveyPathLineEdit->text().replace("/", "\\"));
 #endif
-    _ui->defaultModeButton->setChecked(_settings->value("MODE/ExecMode").toString() == "default");
-    _ui->heliospyModeButton->setChecked(_settings->value("MODE/ExecMode").toString() == "helios.py");
+    _ui->defaultModeButton->setChecked(_settings->value("MISC/ExecMode").toString() == "default");
+    _ui->heliospyModeButton->setChecked(_settings->value("MISC/ExecMode").toString() == "helios.py");
 
     _ui->runOptionButton->setChecked(_settings->value("ARGS/General") == "");
     _ui->helpButton->setChecked(_settings->value("ARGS/General") == "--help");
@@ -240,6 +241,10 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     _ui->polyscopeCheckbox->setChecked(_settings->value("ARGS/Polyscope").toBool());
     _ui->open3dCheckbox->setChecked(_settings->value("ARGS/Open3D").toBool());
 
+    _ui->argsEditor->setPlainText(_settings->value("ARGS/ArgsEditorString").toString());
+
+    _ui->sourceGuiButton->setChecked(_settings->value("MISC/ArgsSource").toString() == "GUI");
+    _ui->sourceArgEditorButton->setChecked(_settings->value("MISC/ArgsSource").toString() == "ArgsEditor");
 
     // disable options when unchecked
     _ui->heliospyBox->setDisabled(_ui->defaultModeButton->isChecked());
@@ -266,6 +271,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     _ui->outputBrowseButton->setDisabled(!_ui->outputCheckbox->isChecked());
 
     // fill command browser
+    _ui->outputBrowser->setWordWrapMode(QTextOption::WrapAnywhere);
     _ui->cmdBrowser->setWordWrapMode(QTextOption::WrapAnywhere);
     this->updateCmd();
 
@@ -315,14 +321,17 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     QObject::connect(_ui->zipOutputButton, &QCheckBox::toggled, [this](bool checked)
                     {
                         _settings->setValue("ARGS/ZipOutput", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->lasScaleCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
                         _settings->setValue("ARGS/LasScale", checked ? QString::number(_ui->lasScaleSpinbox->value()) : "default");
+                        this->updateCmd();
                     });
     QObject::connect(_ui->lasScaleSpinbox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [this](float value)
                     {
-                            _settings->setValue("ARGS/LasScale", QString::number(value));
+                        _settings->setValue("ARGS/LasScale", QString::number(value));
+                        this->updateCmd();
                     });
     QObject::connect(_ui->strategyCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
@@ -334,14 +343,17 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                         {
                             _settings->setValue("ARGS/Parallelization", "default");
                         }
+                        this->updateCmd();
                     });
     QObject::connect(_ui->staticDynamicChunkButton, &QRadioButton::toggled, [this](bool checked)
                     {
-                            _settings->setValue("ARGS/Parallelization", checked ? "0" : "1");
+                        _settings->setValue("ARGS/Parallelization", checked ? "0" : "1");
+                        this->updateCmd();
                     });
     QObject::connect(_ui->warehousButton, &QRadioButton::toggled, [this](bool checked)
                     {
-                            _settings->setValue("ARGS/Parallelization", checked ? "1" : "0");
+                        _settings->setValue("ARGS/Parallelization", checked ? "1" : "0");
+                        this->updateCmd();
                     });
     QObject::connect(_ui->nthreadCheckbox, &QCheckBox::toggled, this, &Launcher::writeNThreadsToSettings);
     QObject::connect(_ui->nthreadSlider, &QSlider::valueChanged, this, &Launcher::writeNThreadsToSettings);
@@ -355,30 +367,37 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     QObject::connect(_ui->splitByChannelCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
                         _settings->setValue("ARGS/SplitByChannel", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->writeWaveformCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
-                            _settings->setValue("ARGS/WriteWaveform", checked);
+                        _settings->setValue("ARGS/WriteWaveform", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->calcEchoWidthCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
-                            _settings->setValue("ARGS/CalcEchoWidth", checked);
+                        _settings->setValue("ARGS/CalcEchoWidth", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->fullwaveNoiseCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
-                            _settings->setValue("ARGS/FullwaveNoise", checked);
+                        _settings->setValue("ARGS/FullwaveNoise", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->fixedIncidenceAngleCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
-                            _settings->setValue("ARGS/FixedIncidenceAngle", checked);
+                        _settings->setValue("ARGS/FixedIncidenceAngle", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->disablePlatformNoiseCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
-                            _settings->setValue("ARGS/DisablePlatformNoise", checked);
+                        _settings->setValue("ARGS/DisablePlatformNoise", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->disableLegNoiseCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
-                            _settings->setValue("ARGS/DisableLegNoise", checked);
+                        _settings->setValue("ARGS/DisableLegNoise", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->seedCheckbox, &QCheckBox::toggled, this, &Launcher::writeSeedToSettings);
     QObject::connect(_ui->seedEdit, &QLineEdit::textChanged, this, &Launcher::writeSeedToSettings);
@@ -386,35 +405,43 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     QObject::connect(_ui->gpsStartTimeEdit, &QLineEdit::textChanged, this, &Launcher::writeGpsStartTimeToSettings);
     QObject::connect(_ui->logFileCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
-                            _settings->setValue("ARGS/LogFile", checked);
+                        _settings->setValue("ARGS/LogFile", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->logFileOnlyCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
-                            _settings->setValue("ARGS/LogFileOnly", checked);
+                        _settings->setValue("ARGS/LogFileOnly", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->silentCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
-                            _settings->setValue("ARGS/Silent", checked);
+                        _settings->setValue("ARGS/Silent", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->quietCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
-                            _settings->setValue("ARGS/Quiet", checked);
+                        _settings->setValue("ARGS/Quiet", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->vtCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
-                            _settings->setValue("ARGS/Vt", checked);
+                        _settings->setValue("ARGS/Vt", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->vCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
-                            _settings->setValue("ARGS/V", checked);
+                        _settings->setValue("ARGS/V", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->vvCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
-                            _settings->setValue("ARGS/VV", checked);
+                        _settings->setValue("ARGS/VV", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->rebuildSceneCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
-                            _settings->setValue("ARGS/RebuildScene", checked);
+                        _settings->setValue("ARGS/RebuildScene", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->kdtTypeCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
@@ -441,6 +468,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                         {
                             _settings->setValue("ARGS/KDTree", "default");
                         }
+                        this->updateCmd();
                     });
     QObject::connect(_ui->medianBalancingButton, &QRadioButton::toggled, [this](bool checked)
                     {
@@ -448,6 +476,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                         {
                             _settings->setValue("ARGS/KDTree", 1);
                         }
+                        this->updateCmd();
                     });
     QObject::connect(_ui->SAHButton, &QRadioButton::toggled, [this](bool checked)
                     {
@@ -455,6 +484,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                         {
                             _settings->setValue("ARGS/KDTree", 2);
                         }
+                        this->updateCmd();
                     });
     QObject::connect(_ui->SAHbestAxisButton, &QRadioButton::toggled, [this](bool checked)
                     {
@@ -462,6 +492,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                         {
                             _settings->setValue("ARGS/KDTree", 3);
                         }
+                        this->updateCmd();
                     });
     QObject::connect(_ui->fastSAHButton, &QRadioButton::toggled, [this](bool checked)
                     {
@@ -469,6 +500,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                         {
                             _settings->setValue("ARGS/KDTree", 4);
                         }
+                        this->updateCmd();
                     });
     QObject::connect(_ui->kdtThreadsCheckbox, &QCheckBox::toggled, this, &Launcher::writeKDTreeThreadsToSettings);
     QObject::connect(_ui->kdtThreadsSlider, &QSlider::valueChanged, this, &Launcher::writeKDTreeThreadsToSettings);
@@ -482,6 +514,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     QObject::connect(_ui->unzipCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
                         _settings->setValue("ARGS/Unzip", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->unzipInputEdit, &QLineEdit::textChanged, [this](const QString& text)
                     {
@@ -493,6 +526,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                             _ui->unzipInputEdit->setText(_ui->unzipInputEdit->text().replace(_ui->heliosBaseDirLineEdit->text(), "."));
                         }
                         _settings->setValue("ARGS/UnzipInput", _ui->unzipInputEdit->text());
+                        this->updateCmd();
                     });
     QObject::connect(_ui->unzipOutputEdit, &QLineEdit::textChanged, [this](const QString& text)
                     {
@@ -504,10 +538,12 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                             _ui->unzipOutputEdit->setText(_ui->unzipOutputEdit->text().replace(_ui->heliosBaseDirLineEdit->text(), "."));
                         }
                         _settings->setValue("ARGS/UnzipOutput", _ui->unzipOutputEdit->text());
+                        this->updateCmd();
                     });
     QObject::connect(_ui->assetsCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
                         _settings->setValue("ARGS/AssetsPathFlag", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->assetsEdit, &QLineEdit::textChanged, [this](const QString& text)
                     {
@@ -519,10 +555,12 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                             _ui->assetsEdit->setText(_ui->assetsEdit->text().replace(_ui->heliosBaseDirLineEdit->text(), "."));
                         }
                         _settings->setValue("ARGS/AssetsPath", _ui->assetsEdit->text());
+                        this->updateCmd();
                     });
     QObject::connect(_ui->outputCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
                         _settings->setValue("ARGS/OutputPathFlag", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->outputEdit, &QLineEdit::textChanged, [this](const QString& text)
                     {
@@ -534,24 +572,54 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                             _ui->outputEdit->setText(_ui->outputEdit->text().replace(_ui->heliosBaseDirLineEdit->text(), "."));
                         }
                         _settings->setValue("ARGS/OutputPath", _ui->outputEdit->text());
+                        this->updateCmd();
                     });
     QObject::connect(_ui->liveTrajectoryPlotCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
                         _settings->setValue("ARGS/LiveTrajectoryPlot", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->polyscopeCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
                         _settings->setValue("ARGS/Polyscope", checked);
+                        this->updateCmd();
                     });
     QObject::connect(_ui->open3dCheckbox, &QCheckBox::toggled, [this](bool checked)
                     {
                         _settings->setValue("ARGS/Open3D", checked);
+                        this->updateCmd();
+                    });
+
+    QObject::connect(_ui->sourceGuiButton, &QRadioButton::toggled, [this](bool checked)
+                    {
+                        if (checked)
+                        {
+                            _settings->setValue("MISC/ArgsSource", "GUI");
+                        }
+                        this->updateCmd();
+                    });
+    QObject::connect(_ui->sourceArgEditorButton, &QRadioButton::toggled, [this](bool checked)
+                    {
+                        if (checked)
+                        {
+                            _settings->setValue("MISC/ArgsSource", "ArgsEditor");
+                        }
+                        this->updateCmd();
                     });
 
     // update command browser in real time when helios base directory, survey.xml or arguments change
     QObject::connect(_ui->heliosBaseDirLineEdit, &QLineEdit::textChanged, this, &Launcher::updateCmd);
     QObject::connect(_ui->surveyPathLineEdit, &QLineEdit::textChanged, this, &Launcher::updateCmd);
-    QObject::connect(_ui->argsEditor, &QPlainTextEdit::textChanged, this, &Launcher::updateCmd);
+    QObject::connect(_ui->argsEditor, &QPlainTextEdit::textChanged, [this]
+                    {
+                        _settings->setValue("ARGS/ArgsEditorString", _ui->argsEditor->toPlainText());
+                        this->updateCmd();
+                    });
+
+    QObject::connect(_ui->optionsTabs, &QTabWidget::currentChanged, [this](int index)
+                    {
+                        _settings->setValue("MISC/CurrentTab", index);
+                    });
 
     // Button functions
 
@@ -609,6 +677,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                             _ui->unzipInputEdit->setText(unzipInputFile);
                             _settings->setValue("ARGS/UnzipInput", _ui->unzipInputEdit->text());
                         }
+                        this->updateCmd();
                     });
         QObject::connect(_ui->unzipOutputBrowseButton, &QPushButton::clicked, this, [this]()
                     {
@@ -639,6 +708,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                             _ui->unzipOutputEdit->setText(unzipOutputFile);
                             _settings->setValue("ARGS/UnzipOutput", _ui->unzipOutputEdit->text());
                         }
+                        this->updateCmd();
                     });
         QObject::connect(_ui->assetsBrowseButton, &QPushButton::clicked, this, [this]()
                     {
@@ -666,6 +736,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                             _ui->assetsEdit->setText(assetsPath);
                             _settings->setValue("ARGS/AssetsPath", _ui->assetsEdit->text());
                         }
+                        this->updateCmd();
                     });
         QObject::connect(_ui->outputBrowseButton, &QPushButton::clicked, this, [this]()
                     {
@@ -693,6 +764,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
                             _ui->outputEdit->setText(outputPath);
                             _settings->setValue("ARGS/OutputPath", _ui->outputEdit->text());
                         }
+                        this->updateCmd();
                     });
 
     // Help button displays HELIOS++ main help
@@ -843,19 +915,6 @@ Launcher::~Launcher()
     _settings->setValue("ARGS/LiveTrajectoryPlot", _ui->liveTrajectoryPlotCheckbox->isChecked());
     _settings->setValue("ARGS/Polyscope", _ui->polyscopeCheckbox->isChecked());
     _settings->setValue("ARGS/Open3D", _ui->open3dCheckbox->isChecked());
-
-    //    auto args = _ui->argsEditor->toPlainText().split(QRegExp("[\\s\n]+"));
-    //    _settings->beginWriteArray("ARGS");
-    //    for (int i = 0; i < args.size(); i++)
-    //    {
-    //        if (args.at(i).isEmpty())
-    //        {
-    //            continue;
-    //        }
-    //        _settings->setArrayIndex(i);
-    //        _settings->setValue("arg", args.at(i));
-    //    }
-    //    _settings->endArray();
     _process.close();
     delete _ui;
 }
@@ -875,7 +934,7 @@ void Launcher::writeLastSurveyToSettings()
     _ui->surveyPathLineEdit->setText(_ui->surveyPathLineEdit->text().replace("/", "\\"));
 #endif
     // when survey.xml is within helios base directory, use relative path
-    if (_ui->surveyPathLineEdit->text().startsWith(_settings->value("DIRS/HeliosBaseDir").toString())
+    if (_ui->surveyPathLineEdit->text().startsWith(_ui->heliosBaseDirLineEdit->text())
         && _ui->heliosBaseDirLineEdit->text() != ""
         && QDir(_ui->heliosBaseDirLineEdit->text()).exists())
     {
@@ -888,15 +947,15 @@ void Launcher::writeExecModeToSettings()
 {
     if (_ui->defaultModeButton->isChecked())
     {
-        _settings->setValue("MODE/ExecMode", "default");
+        _settings->setValue("MISC/ExecMode", "default");
     }
     else if (_ui->heliospyModeButton->isChecked())
     {
-        _settings->setValue("MODE/ExecMode", "helios.py");
+        _settings->setValue("MISC/ExecMode", "helios.py");
     }
     else
     {
-        _settings->setValue("MODE/ExecMode", "");
+        _settings->setValue("MISC/ExecMode", "");
     }
     this->updateCmd();
 }
@@ -919,6 +978,7 @@ void Launcher::writeGeneralToSettings()
     {
         _settings->setValue("ARGS/General", "--test");
     }
+    this->updateCmd();
 }
 
 void Launcher::writeOutputToSettings()
@@ -935,6 +995,7 @@ void Launcher::writeOutputToSettings()
     {
         _settings->setValue("ARGS/Output", "--las10");
     }
+    this->updateCmd();
 }
 
 void Launcher::writeNThreadsToSettings()
@@ -947,6 +1008,7 @@ void Launcher::writeNThreadsToSettings()
     {
         _settings->setValue("ARGS/nthreads", "default");
     }
+    this->updateCmd();
 }
 
 void Launcher::writeChunkSizeToSettings()
@@ -959,6 +1021,7 @@ void Launcher::writeChunkSizeToSettings()
     {
         _settings->setValue("ARGS/ChunkSize", "default");
     }
+    this->updateCmd();
 }
 
 void Launcher::writeWarehouseFactorToSettings()
@@ -971,6 +1034,7 @@ void Launcher::writeWarehouseFactorToSettings()
     {
         _settings->setValue("ARGS/WarehouseFactor", "default");
     }
+    this->updateCmd();
 }
 
 void Launcher::writeSeedToSettings()
@@ -983,6 +1047,7 @@ void Launcher::writeSeedToSettings()
     {
         _settings->setValue("ARGS/Seed", "default");
     }
+    this->updateCmd();
 }
 
 void Launcher::writeGpsStartTimeToSettings()
@@ -995,6 +1060,7 @@ void Launcher::writeGpsStartTimeToSettings()
     {
         _settings->setValue("ARGS/GpsStartTime", "default");
     }
+    this->updateCmd();
 }
 
 void Launcher::writeKDTreeThreadsToSettings()
@@ -1007,6 +1073,7 @@ void Launcher::writeKDTreeThreadsToSettings()
     {
         _settings->setValue("ARGS/KDTreeThreads", "default");
     }
+    this->updateCmd();
 }
 
 void Launcher::writeKDTreeGeomThreadsToSettings()
@@ -1019,6 +1086,7 @@ void Launcher::writeKDTreeGeomThreadsToSettings()
     {
         _settings->setValue("ARGS/KDTreeGeomThreads", "default");
     }
+    this->updateCmd();
 }
 
 void Launcher::writeSAHnodesToSettings()
@@ -1031,7 +1099,7 @@ void Launcher::writeSAHnodesToSettings()
     {
         _settings->setValue("ARGS/SAHnodes", "default");
     }
-
+    this->updateCmd();
 }
 
 void Launcher::updateCmd()
@@ -1042,13 +1110,12 @@ void Launcher::updateCmd()
     _ui->cmdBrowser->insertPlainText(_ui->heliosBaseDirLineEdit->text().replace("/", "\\") + ">");
     if (_ui->defaultModeButton->isChecked() && !_ui->heliospyModeButton->isChecked())
     {
-        _ui->cmdBrowser->insertPlainText("run\\helios ");
+        _ui->cmdBrowser->insertPlainText("run\\helios");
     }
     else if (!_ui->defaultModeButton->isChecked() && _ui->heliospyModeButton->isChecked())
     {
-        _ui->cmdBrowser->insertPlainText("python run\\helios.py ");
+        _ui->cmdBrowser->insertPlainText("python run\\helios.py");
     }
-    _ui->cmdBrowser->insertPlainText(_ui->surveyPathLineEdit->text() + " " + _ui->argsEditor->toPlainText().replace("\n", " "));
 #else
     QTextCharFormat fmt;
     fmt.setFontWeight(QFont::Bold);
@@ -1069,18 +1136,178 @@ void Launcher::updateCmd()
     _ui->cmdBrowser->setCurrentCharFormat(fmt);
     if (_ui->defaultModeButton->isChecked() && !_ui->heliospyModeButton->isChecked())
     {
-        _ui->cmdBrowser->insertPlainText("$ run/helios ");
+        _ui->cmdBrowser->insertPlainText("$ run/helios");
     }
     else if (!_ui->defaultModeButton->isChecked() && _ui->heliospyModeButton->isChecked())
     {
-        _ui->cmdBrowser->insertPlainText("$ python3 run/helios.py ");
+        _ui->cmdBrowser->insertPlainText("$ python3 run/helios.py");
     }
     else
     {
-        _ui->cmdBrowser->insertPlainText("$ ");
+        _ui->cmdBrowser->insertPlainText("$");
     }
-    _ui->cmdBrowser->insertPlainText(_ui->surveyPathLineEdit->text() + " " + _ui->argsEditor->toPlainText().replace("\n", " "));
 #endif
+    if (!_ui->surveyPathLineEdit->text().isEmpty())
+    {
+        _ui->cmdBrowser->insertPlainText(" ");
+    }
+    _ui->cmdBrowser->insertPlainText(_ui->surveyPathLineEdit->text());
+    if (!_ui->sourceGuiButton->isChecked() && _ui->sourceArgEditorButton->isChecked())
+    {
+        _ui->cmdBrowser->insertPlainText(" " + _ui->argsEditor->toPlainText().replace("\n", " "));
+    }
+    else if (_ui->sourceGuiButton->isChecked() && !_ui->sourceArgEditorButton->isChecked())
+    {
+        if (!_ui->runOptionButton->isChecked())
+        {
+            _ui->cmdBrowser->insertPlainText(" ");
+        }
+        _ui->cmdBrowser->insertPlainText(_settings->value("ARGS/General").toString());
+        if (_ui->unzipCheckbox->isChecked() && _ui->unzipCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" --unzip " + _settings->value("ARGS/UnzipInput").toString() + " " + _settings->value("ARGS/UnzipOutput").toString());
+        }
+        if (_ui->assetsCheckbox->isChecked())
+        {
+            _ui->cmdBrowser->insertPlainText(" --assets " + _settings->value("ARGS/AssetsPath").toString());
+        }
+        if (_ui->outputCheckbox->isChecked())
+        {
+            _ui->cmdBrowser->insertPlainText(" --output " + _settings->value("ARGS/OutputPath").toString());
+        }
+        if (_ui->splitByChannelCheckbox->isChecked() && _ui->splitByChannelCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" --splitByChannel");
+        }
+        if (_ui->writeWaveformCheckbox->isChecked())
+        {
+            _ui->cmdBrowser->insertPlainText(" --writeWaveform");
+        }
+        if (_ui->calcEchoWidthCheckbox->isChecked())
+        {
+            if (_settings->value("MISC/ExecMode").toString() == "default")
+            {
+                _ui->cmdBrowser->insertPlainText(" --calcEchoWidth");
+            }
+            else if (_settings->value("MISC/ExecMode").toString() == "helios.py")
+            {
+                _ui->cmdBrowser->insertPlainText(" --calcEchowidth");
+            }
+        }
+        if (_ui->fullwaveNoiseCheckbox->isChecked())
+        {
+            _ui->cmdBrowser->insertPlainText(" --fullwaveNoise");
+        }
+        if (_ui->fixedIncidenceAngleCheckbox->isChecked() && _ui->fixedIncidenceAngleCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" --fixedIncidenceAngle");
+        }
+        if (_ui->seedCheckbox->isChecked())
+        {
+            _ui->cmdBrowser->insertPlainText(" --seed " + _settings->value("ARGS/Seed").toString());
+        }
+        if (_ui->gpsStartTimeCheckbox->isChecked() && _ui->gpsStartTimeCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" --gpsStartTime " + _settings->value("ARGS/GpsStartTime").toString());
+        }
+        if (!_ui->asciiButton->isChecked())
+        {
+            _ui->cmdBrowser->insertPlainText(" ");
+        }
+        _ui->cmdBrowser->insertPlainText(_settings->value("ARGS/Output").toString());
+        if (_ui->zipOutputButton->isChecked())
+        {
+            _ui->cmdBrowser->insertPlainText(" --zipOutput");
+        }
+        if (_ui->lasScaleCheckbox->isChecked() && _ui->lasScaleCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" --lasScale " + _settings->value("ARGS/LasScale").toString());
+        }
+        if (_ui->strategyCheckbox->isChecked() && _ui->strategyCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" --parallelization " + _settings->value("ARGS/Parallelization").toString());
+        }
+        if (_ui->nthreadCheckbox->isChecked())
+        {
+            _ui->cmdBrowser->insertPlainText(" --nthreads " + _settings->value("ARGS/nthreads").toString());
+        }
+        if (_ui->chunkSizeCheckbox->isChecked() && _ui->chunkSizeCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" --chunkSize " + _settings->value("ARGS/ChunkSize").toString());
+        }
+        if (_ui->warehouseFactorCheckbox->isChecked() && _ui->warehouseFactorCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" --warehouseFactor " + _settings->value("ARGS/WarehouseFactor").toString());
+        }
+        if (_ui->rebuildSceneCheckbox->isChecked())
+        {
+            _ui->cmdBrowser->insertPlainText(" --rebuildScene");
+        }
+        if (_ui->kdtTypeCheckbox->isChecked() && _ui->kdtTypeCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" --kdt " + _settings->value("ARGS/KDTree").toString());
+        }
+        if (_ui->kdtThreadsCheckbox->isChecked() && _ui->kdtThreadsCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" --kdtJobs " + _settings->value("ARGS/KDTreeThreads").toString());
+        }
+        if (_ui->kdtGeomThreadsCheckbox->isChecked() && _ui->kdtGeomThreadsCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" --kdtGeomJobs " + _settings->value("ARGS/KDTreeGeomThreads").toString());
+        }
+        if (_ui->SAHnodesCheckbox->isChecked() && _ui->SAHnodesCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" --sahNodes " + _settings->value("ARGS/SAHnodes").toString());
+        }
+        if (_ui->disablePlatformNoiseCheckbox->isChecked())
+        {
+            _ui->cmdBrowser->insertPlainText(" --disablePlatformNoise");
+        }
+        if (_ui->disableLegNoiseCheckbox->isChecked())
+        {
+            _ui->cmdBrowser->insertPlainText(" --disableLegNoise");
+        }
+        if (_ui->logFileCheckbox->isChecked() && _ui->logFileCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" --logFile");
+        }
+        if (_ui->logFileOnlyCheckbox->isChecked() && _ui->logFileOnlyCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" --logFileOnly");
+        }
+        if (_ui->silentCheckbox->isChecked())
+        {
+            _ui->cmdBrowser->insertPlainText(" --silent");
+        }
+        if (_ui->quietCheckbox->isChecked())
+        {
+            _ui->cmdBrowser->insertPlainText(" --quiet");
+        }
+        if (_ui->vtCheckbox->isChecked() && _ui->vtCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" -vt");
+        }
+        if (_ui->vCheckbox->isChecked())
+        {
+            _ui->cmdBrowser->insertPlainText(" -v");
+        }
+        if (_ui->vvCheckbox->isChecked())
+        {
+            _ui->cmdBrowser->insertPlainText(" -vv");
+        }
+        if (_ui->liveTrajectoryPlotCheckbox->isChecked() && _ui->liveTrajectoryPlotCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" --livetrajectoryplot");
+        }
+        if (_ui->polyscopeCheckbox->isChecked() && _ui->polyscopeCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" --polyscope");
+        }
+        if (_ui->open3dCheckbox->isChecked() && _ui->open3dCheckbox->isEnabled())
+        {
+            _ui->cmdBrowser->insertPlainText(" --open3d");
+        }
+    }
 }
 
 void Launcher::startHeliospp()
@@ -1099,8 +1326,30 @@ void Launcher::startHeliospp()
             return;
         }
     }
-    // Read survey path from surveyPathLineEdit and optional arguments from argsEditor
-    auto options = QStringList() << _ui->surveyPathLineEdit->text() << _ui->argsEditor->toPlainText().split(QRegExp("[ \n]"));
+    auto cmd = _ui->cmdBrowser->toPlainText();
+    QString exec;
+    auto execMode = _settings->value("MISC/ExecMode").toString();
+#ifdef _WIN32
+    if (execMode == "default")
+    {
+        exec = "run\\helios.exe";
+    }
+    else if (execMode == "helios.py")
+    {
+        exec = "python run\\helios.py";
+    }
+#else
+    if (execMode == "default")
+    {
+        exec = "run/helios";
+    }
+    else if (execMode == "helios.py")
+    {
+        exec = "python3 run/helios.py";
+    }
+#endif
+    // Read arguments from cmdBrowser
+    auto options = cmd.mid(cmd.indexOf(exec) + exec.length()).split(QRegExp("[\\s\n]+"));
     options.removeAll("");
 
     // clear output
@@ -1108,6 +1357,24 @@ void Launcher::startHeliospp()
     {
         _ui->outputBrowser->clear();
     }
+
+    QTextCharFormat fmt;
+    fmt.setForeground(Qt::blue);
+    _ui->outputBrowser->setCurrentCharFormat(fmt);
+    _ui->outputBrowser->insertPlainText("HELIOS++ execution command: '");
+    fmt.setFontItalic(true);
+    _ui->outputBrowser->setCurrentCharFormat(fmt);
+    _ui->outputBrowser->insertPlainText(exec);
+    if (!options.isEmpty())
+    {
+        _ui->outputBrowser->insertPlainText(" " + options.join(" "));
+    }
+    fmt.setFontItalic(false);
+    _ui->outputBrowser->setCurrentCharFormat(fmt);
+    _ui->outputBrowser->insertPlainText("'\n\n");
+    fmt.setForeground(Qt::black);
+    _ui->outputBrowser->setCurrentCharFormat(fmt);
+
 #ifdef _WIN32
     if (_ui->defaultModeButton->isChecked() && !_ui->heliospyModeButton->isChecked())
     {
@@ -1191,7 +1458,12 @@ void Launcher::exitHeliospp()
         auto exitCode = _process.exitCode();
         if (exitCode == 0)
         {
+            QTextCharFormat fmt;
+            fmt.setForeground(Qt::darkGreen);
+            _ui->outputBrowser->setCurrentCharFormat(fmt);
             _ui->outputBrowser->append("HELIOS++ exited successfully\n");
+            fmt.setForeground(Qt::black);
+            _ui->outputBrowser->setCurrentCharFormat(fmt);
             // Extract output directory from HELIOS++ output
             QString relOutDir;
             for (auto& line : _ui->outputBrowser->toPlainText().split("\n"))

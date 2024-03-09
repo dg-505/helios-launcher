@@ -75,6 +75,9 @@ auto main(int argc, char* argv[]) -> int
         settings.setValue("Polyscope", "false");
         settings.setValue("Open3D", "false");
         settings.endGroup();
+        settings.setValue("MISC/ArgsSource", "GUI");
+        settings.setValue("MISC/CurrentTab", "0");
+        settings.setValue("MISC/ExecMode", "default");
     }
 
     // possible later: add support for translations
