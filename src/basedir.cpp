@@ -1,8 +1,8 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-#include "basedir.h"
 #include "../ui/ui_basedir.h"
+#include "basedir.h"
 
 BaseDir::BaseDir(QWidget* parent)
     : QDialog(parent),

@@ -9,7 +9,7 @@ namespace Ui
 
 class BaseDir : public QDialog
 {
-        Q_OBJECT
+        Q_OBJECT // NOLINT
 
     public:
         BaseDir(const BaseDir&) = delete;

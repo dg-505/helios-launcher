@@ -13,71 +13,71 @@ auto main(int argc, char* argv[]) -> int
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 
-    QApplication::setStyle("fusion");
+    QApplication::setStyle(QStringLiteral("fusion"));
     const QApplication launcherApp(argc, argv);
 
     // settings to preserve between sessions
     // default location on Linux: ~/.config/heliospp/helios-launcher.ini
     // default location on Windows: C:\Users\<username>\AppData\Roaming\heliospp\helios-launcher.ini
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope, "heliospp", "helios-launcher");
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, QStringLiteral("heliospp"), QStringLiteral("helios-launcher"));
 
     // if not existing, specify HELIOS++ base directory
-    if (settings.value("DIRS/HeliosBaseDir").isNull() || settings.value("DIRS/HeliosBaseDir").toString() == "")
+    if (settings.value(QStringLiteral("DIRS/HeliosBaseDir")).isNull() || settings.value(QStringLiteral("DIRS/HeliosBaseDir")).toString() == QLatin1String(""))
     {
         auto* baseDir = std::make_unique<BaseDir>(nullptr).release();
         if (baseDir->exec() == QDialog::Accepted)
         {
-            settings.setValue("DIRS/HeliosBaseDir", baseDir->getBaseDir());
+            settings.setValue(QStringLiteral("DIRS/HeliosBaseDir"), baseDir->getBaseDir());
         }
         else
         {
             return 1;
         }
         // set default values for optional arguments
-        settings.beginGroup("ARGS");
-        settings.setValue("General", "");
-        settings.setValue("Output", "");
-        settings.setValue("ZipOutput", "false");
-        settings.setValue("LasScale", "default");
-        settings.setValue("Parallelization", "default");
-        settings.setValue("nthreads", "default");
-        settings.setValue("ChunkSize", "default");
-        settings.setValue("WarehouseFactor", "default");
-        settings.setValue("SplitByChannel", "false");
-        settings.setValue("WriteWaveform", "false");
-        settings.setValue("CalcEchoWidth", "false");
-        settings.setValue("FullwaveNoise", "false");
-        settings.setValue("FixedIncidenceAngle", "false");
-        settings.setValue("DisablePlatformNoise", "false");
-        settings.setValue("DisableLegNoise", "false");
-        settings.setValue("Seed", "default");
-        settings.setValue("GpsStartTime", "default");
-        settings.setValue("LogFile", "false");
-        settings.setValue("LogFileOnly", "false");
-        settings.setValue("Silent", "false");
-        settings.setValue("Quiet", "false");
-        settings.setValue("Vt", "false");
-        settings.setValue("V", "false");
-        settings.setValue("VV", "false");
-        settings.setValue("RebuildScene", "false");
-        settings.setValue("KDTree", "default");
-        settings.setValue("KDTreeThreads", "default");
-        settings.setValue("KDTreeGeomThreads", "default");
-        settings.setValue("SAHnodes", "default");
-        settings.setValue("Unzip", "false");
-        settings.setValue("UnzipInput", "");
-        settings.setValue("UnzipOutput", "");
-        settings.setValue("AssetsPathFlag", "false");
-        settings.setValue("AssetsPath", "");
-        settings.setValue("OutputPathFlag", "false");
-        settings.setValue("OutputPath", "");
-        settings.setValue("LiveTrajectoryPlot", "false");
-        settings.setValue("Polyscope", "false");
-        settings.setValue("Open3D", "false");
+        settings.beginGroup(QStringLiteral("ARGS"));
+        settings.setValue(QStringLiteral("General"), "");
+        settings.setValue(QStringLiteral("Output"), "");
+        settings.setValue(QStringLiteral("ZipOutput"), "false");
+        settings.setValue(QStringLiteral("LasScale"), "default");
+        settings.setValue(QStringLiteral("Parallelization"), "default");
+        settings.setValue(QStringLiteral("nthreads"), "default");
+        settings.setValue(QStringLiteral("ChunkSize"), "default");
+        settings.setValue(QStringLiteral("WarehouseFactor"), "default");
+        settings.setValue(QStringLiteral("SplitByChannel"), "false");
+        settings.setValue(QStringLiteral("WriteWaveform"), "false");
+        settings.setValue(QStringLiteral("CalcEchoWidth"), "false");
+        settings.setValue(QStringLiteral("FullwaveNoise"), "false");
+        settings.setValue(QStringLiteral("FixedIncidenceAngle"), "false");
+        settings.setValue(QStringLiteral("DisablePlatformNoise"), "false");
+        settings.setValue(QStringLiteral("DisableLegNoise"), "false");
+        settings.setValue(QStringLiteral("Seed"), "default");
+        settings.setValue(QStringLiteral("GpsStartTime"), "default");
+        settings.setValue(QStringLiteral("LogFile"), "false");
+        settings.setValue(QStringLiteral("LogFileOnly"), "false");
+        settings.setValue(QStringLiteral("Silent"), "false");
+        settings.setValue(QStringLiteral("Quiet"), "false");
+        settings.setValue(QStringLiteral("Vt"), "false");
+        settings.setValue(QStringLiteral("V"), "false");
+        settings.setValue(QStringLiteral("VV"), "false");
+        settings.setValue(QStringLiteral("RebuildScene"), "false");
+        settings.setValue(QStringLiteral("KDTree"), "default");
+        settings.setValue(QStringLiteral("KDTreeThreads"), "default");
+        settings.setValue(QStringLiteral("KDTreeGeomThreads"), "default");
+        settings.setValue(QStringLiteral("SAHnodes"), "default");
+        settings.setValue(QStringLiteral("Unzip"), "false");
+        settings.setValue(QStringLiteral("UnzipInput"), "");
+        settings.setValue(QStringLiteral("UnzipOutput"), "");
+        settings.setValue(QStringLiteral("AssetsPathFlag"), "false");
+        settings.setValue(QStringLiteral("AssetsPath"), "");
+        settings.setValue(QStringLiteral("OutputPathFlag"), "false");
+        settings.setValue(QStringLiteral("OutputPath"), "");
+        settings.setValue(QStringLiteral("LiveTrajectoryPlot"), "false");
+        settings.setValue(QStringLiteral("Polyscope"), "false");
+        settings.setValue(QStringLiteral("Open3D"), "false");
         settings.endGroup();
-        settings.setValue("MISC/ArgsSource", "GUI");
-        settings.setValue("MISC/CurrentTab", "0");
-        settings.setValue("MISC/ExecMode", "default");
+        settings.setValue(QStringLiteral("MISC/ArgsSource"), "GUI");
+        settings.setValue(QStringLiteral("MISC/CurrentTab"), "0");
+        settings.setValue(QStringLiteral("MISC/ExecMode"), "default");
     }
 
     // possible later: add support for translations

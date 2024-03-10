@@ -9,7 +9,7 @@ namespace Ui
 
 class Help : public QDialog
 {
-        Q_OBJECT
+        Q_OBJECT // NOLINT
 
     public:
         Help(const Help&) = delete;
