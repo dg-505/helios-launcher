@@ -798,9 +798,6 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="5" column="2">
-                      <widget class="QLineEdit" name="gpsStartTimeEdit"/>
-                     </item>
                      <item row="1" column="1">
                       <widget class="QCheckBox" name="fixedIncidenceAngleCheckbox">
                        <property name="text">
@@ -819,6 +816,13 @@
                       <widget class="QCheckBox" name="splitByChannelCheckbox">
                        <property name="text">
                         <string>Split output by channel</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="2">
+                      <widget class="QDateTimeEdit" name="gpsStartTimeEdit">
+                       <property name="displayFormat">
+                        <string>yyyy-MM-dd HH:mm:ss</string>
                        </property>
                       </widget>
                      </item>
@@ -1946,22 +1950,6 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>gpsStartTimeCheckbox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>gpsStartTimeEdit</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>126</x>
-     <y>604</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>288</x>
-     <y>604</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>assetsCheckbox</sender>
    <signal>toggled(bool)</signal>
    <receiver>assetsEdit</receiver>
@@ -2582,6 +2570,22 @@ p, li { white-space: pre-wrap; }
     <hint type="destinationlabel">
      <x>623</x>
      <y>540</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>gpsStartTimeCheckbox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gpsStartTimeEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>126</x>
+     <y>596</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>304</x>
+     <y>596</y>
     </hint>
    </hints>
   </connection>

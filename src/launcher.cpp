@@ -149,11 +149,12 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     if (_settings->value(QStringLiteral("ARGS/GpsStartTime")).toString() == QStringLiteral("default"))
     {
         _ui->gpsStartTimeCheckbox->setChecked(false);
+        _ui->gpsStartTimeEdit->setDateTime(QDateTime::currentDateTime());
     }
     else
     {
         _ui->gpsStartTimeCheckbox->setChecked(true);
-        _ui->gpsStartTimeEdit->setText(_settings->value(QStringLiteral("ARGS/GpsStartTime")).toString());
+        _ui->gpsStartTimeEdit->setDateTime(_settings->value(QStringLiteral("ARGS/GpsStartTime")).toDateTime());
     }
     _ui->logFileCheckbox->setChecked(_settings->value(QStringLiteral("ARGS/LogFile")).toBool());
     _ui->logFileOnlyCheckbox->setChecked(_settings->value(QStringLiteral("ARGS/LogFileOnly")).toBool());
@@ -389,7 +390,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     QObject::connect(_ui->seedCheckbox, &QCheckBox::toggled, this, &Launcher::writeSeedToSettings);
     QObject::connect(_ui->seedEdit, &QLineEdit::textChanged, this, &Launcher::writeSeedToSettings);
     QObject::connect(_ui->gpsStartTimeCheckbox, &QCheckBox::toggled, this, &Launcher::writeGpsStartTimeToSettings);
-    QObject::connect(_ui->gpsStartTimeEdit, &QLineEdit::textChanged, this, &Launcher::writeGpsStartTimeToSettings);
+    QObject::connect(_ui->gpsStartTimeEdit, &QDateTimeEdit::dateTimeChanged, this, &Launcher::writeGpsStartTimeToSettings);
     QObject::connect(_ui->logFileCheckbox, &QCheckBox::toggled, this, [this](bool checked)
                     {
                         _settings->setValue(QStringLiteral("ARGS/LogFile"), checked);
