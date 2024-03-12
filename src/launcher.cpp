@@ -1293,6 +1293,7 @@ void Launcher::updateCmd()
             _ui->cmdBrowser->insertPlainText(QStringLiteral(" --open3d"));
         }
     }
+    _ui->cmdBrowser->verticalScrollBar()->setValue(_ui->cmdBrowser->verticalScrollBar()->maximum());
 }
 
 void Launcher::startHeliospp()
