@@ -185,6 +185,9 @@
             </property>
             <item>
              <widget class="QRadioButton" name="defaultModeButton">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Command: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;run/helios&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
               <property name="text">
                <string>Use default HELIOS++ executable</string>
               </property>
@@ -195,6 +198,9 @@
             </item>
             <item>
              <widget class="QRadioButton" name="heliospyModeButton">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Command: &amp;quot;python3 &lt;span style=&quot; font-style:italic;&quot;&gt;run/helios.py&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
               <property name="text">
                <string>Use helios.py python script</string>
               </property>
@@ -273,6 +279,9 @@
                </item>
                <item>
                 <widget class="QRadioButton" name="helpButton">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--help&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
                  <property name="text">
                   <string>Display help</string>
                  </property>
@@ -280,6 +289,9 @@
                </item>
                <item>
                 <widget class="QRadioButton" name="versionButton">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--version&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
                  <property name="text">
                   <string>Show version</string>
                  </property>
@@ -287,6 +299,9 @@
                </item>
                <item>
                 <widget class="QRadioButton" name="testButton">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--test&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
                  <property name="text">
                   <string>Run tests</string>
                  </property>
@@ -328,6 +343,9 @@
                </item>
                <item>
                 <widget class="QRadioButton" name="lasButton">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--lasOutput&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
                  <property name="text">
                   <string>LAS v1.4</string>
                  </property>
@@ -335,6 +353,9 @@
                </item>
                <item>
                 <widget class="QRadioButton" name="las10Button">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--las10&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
                  <property name="text">
                   <string>LAS v1.0</string>
                  </property>
@@ -342,6 +363,9 @@
                </item>
                <item>
                 <widget class="QCheckBox" name="zipOutputButton">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--zipOutput&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
                  <property name="text">
                   <string>Compress output</string>
                  </property>
@@ -349,6 +373,9 @@
                </item>
                <item>
                 <widget class="QCheckBox" name="lasScaleCheckbox">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--lasScale&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
                  <property name="text">
                   <string>LAS Scale</string>
                  </property>
@@ -428,6 +455,9 @@
                    </property>
                    <item row="0" column="0">
                     <widget class="QCheckBox" name="strategyCheckbox">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--parallelization &amp;lt;integer&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="text">
                       <string>Parallelization strategy:</string>
                      </property>
@@ -435,6 +465,9 @@
                    </item>
                    <item row="2" column="0">
                     <widget class="QCheckBox" name="chunkSizeCheckbox">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--chunkSize &amp;lt;integer&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="text">
                       <string>Chunk size:</string>
                      </property>
@@ -442,6 +475,9 @@
                    </item>
                    <item row="3" column="0">
                     <widget class="QCheckBox" name="warehouseFactorCheckbox">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--warehouseFactor &amp;lt;integer&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="text">
                       <string>Warehouse factor:</string>
                      </property>
@@ -449,6 +485,9 @@
                    </item>
                    <item row="1" column="0">
                     <widget class="QCheckBox" name="nthreadCheckbox">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--nthreads &amp;lt;integer&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="text">
                       <string>Thread count:</string>
                      </property>
@@ -474,6 +513,9 @@
                       </property>
                       <item>
                        <widget class="QRadioButton" name="staticDynamicChunkButton">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--parallelization 0&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
                         <property name="text">
                          <string>Static/dynamic chunk based</string>
                         </property>
@@ -484,6 +526,9 @@
                       </item>
                       <item>
                        <widget class="QRadioButton" name="warehousButton">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--parallelization 1&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
                         <property name="text">
                          <string>Warehouse based</string>
                         </property>
@@ -755,6 +800,9 @@
                      </property>
                      <item row="4" column="1">
                       <widget class="QCheckBox" name="seedCheckbox">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--seed &amp;lt;seed&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
                        <property name="text">
                         <string>Randomness seed:</string>
                        </property>
@@ -762,6 +810,9 @@
                      </item>
                      <item row="2" column="2">
                       <widget class="QCheckBox" name="fullwaveNoiseCheckbox">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--fullwaveNoise&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
                        <property name="text">
                         <string>Full waveform noise</string>
                        </property>
@@ -772,6 +823,9 @@
                      </item>
                      <item row="0" column="2">
                       <widget class="QCheckBox" name="writeWaveformCheckbox">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--writeWaveform&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
                        <property name="text">
                         <string>Full waveform writing</string>
                        </property>
@@ -779,6 +833,9 @@
                      </item>
                      <item row="3" column="1">
                       <widget class="QCheckBox" name="disableLegNoiseCheckbox">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--disableLegNoise&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
                        <property name="text">
                         <string>Disable leg noise</string>
                        </property>
@@ -786,6 +843,9 @@
                      </item>
                      <item row="2" column="1">
                       <widget class="QCheckBox" name="disablePlatformNoiseCheckbox">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--disablePlatformNoise&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
                        <property name="text">
                         <string>Disable plaform noise</string>
                        </property>
@@ -793,6 +853,9 @@
                      </item>
                      <item row="1" column="2">
                       <widget class="QCheckBox" name="calcEchoWidthCheckbox">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--calcEchowidth&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
                        <property name="text">
                         <string>Calculate echo width</string>
                        </property>
@@ -800,6 +863,9 @@
                      </item>
                      <item row="1" column="1">
                       <widget class="QCheckBox" name="fixedIncidenceAngleCheckbox">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--fixedIncidenceAngle&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
                        <property name="text">
                         <string>Fixed incidence angle</string>
                        </property>
@@ -807,6 +873,9 @@
                      </item>
                      <item row="5" column="1">
                       <widget class="QCheckBox" name="gpsStartTimeCheckbox">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--gpsStartTime &amp;lt;string&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
                        <property name="text">
                         <string>GPS start time:</string>
                        </property>
@@ -814,6 +883,9 @@
                      </item>
                      <item row="0" column="1">
                       <widget class="QCheckBox" name="splitByChannelCheckbox">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--splitByChannel&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
                        <property name="text">
                         <string>Split output by channel</string>
                        </property>
@@ -854,6 +926,9 @@
                    </property>
                    <item row="4" column="0">
                     <widget class="QCheckBox" name="vtCheckbox">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;-vt&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="text">
                       <string>Time and errors</string>
                      </property>
@@ -861,6 +936,9 @@
                    </item>
                    <item row="0" column="0">
                     <widget class="QCheckBox" name="logFileCheckbox">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--logFile&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="text">
                       <string>Write log file</string>
                      </property>
@@ -868,6 +946,9 @@
                    </item>
                    <item row="5" column="0">
                     <widget class="QCheckBox" name="vCheckbox">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;-v&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="text">
                       <string>Errors, information and warnings</string>
                      </property>
@@ -875,6 +956,9 @@
                    </item>
                    <item row="1" column="0">
                     <widget class="QCheckBox" name="logFileOnlyCheckbox">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--logFileOnly&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="text">
                       <string>ONLY write log file</string>
                      </property>
@@ -882,6 +966,9 @@
                    </item>
                    <item row="2" column="0">
                     <widget class="QCheckBox" name="silentCheckbox">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--silent&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="text">
                       <string>Disable logging output (silent)</string>
                      </property>
@@ -889,6 +976,9 @@
                    </item>
                    <item row="6" column="0">
                     <widget class="QCheckBox" name="vvCheckbox">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;-vv&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="text">
                       <string>All messages</string>
                      </property>
@@ -896,6 +986,9 @@
                    </item>
                    <item row="3" column="0">
                     <widget class="QCheckBox" name="quietCheckbox">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--quiet&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="text">
                       <string>Only errors (quiet)</string>
                      </property>
@@ -951,6 +1044,9 @@
                  </property>
                  <item row="0" column="0">
                   <widget class="QCheckBox" name="rebuildSceneCheckbox">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--rebuildScene&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
                    <property name="text">
                     <string>Force scene rebuild</string>
                    </property>
@@ -976,6 +1072,9 @@
                     </property>
                     <item row="2" column="0">
                      <widget class="QCheckBox" name="kdtThreadsCheckbox">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--kdtJobs &amp;lt;integer&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="text">
                        <string>KDTree threads:</string>
                       </property>
@@ -989,6 +1088,9 @@
                         <verstretch>0</verstretch>
                        </sizepolicy>
                       </property>
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--kdt &amp;lt;integer&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="text">
                        <string>KDTree type:</string>
                       </property>
@@ -996,6 +1098,9 @@
                     </item>
                     <item row="3" column="0">
                      <widget class="QCheckBox" name="kdtGeomThreadsCheckbox">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--kdtGeomJobs &amp;lt;integer&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="text">
                        <string>KDT geom threads:</string>
                       </property>
@@ -1003,6 +1108,9 @@
                     </item>
                     <item row="4" column="0">
                      <widget class="QCheckBox" name="SAHnodesCheckbox">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--sahNodes &amp;lt;integer&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="text">
                        <string>SAH Nodes</string>
                       </property>
@@ -1028,6 +1136,9 @@
                        </property>
                        <item>
                         <widget class="QRadioButton" name="medianBalancingButton">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--kdt 1&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
                          <property name="text">
                           <string>Median balancing</string>
                          </property>
@@ -1035,6 +1146,9 @@
                        </item>
                        <item>
                         <widget class="QRadioButton" name="SAHButton">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--kdt 2&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
                          <property name="text">
                           <string>SAH</string>
                          </property>
@@ -1042,6 +1156,9 @@
                        </item>
                        <item>
                         <widget class="QRadioButton" name="SAHbestAxisButton">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--kdt 3&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
                          <property name="text">
                           <string>SAH best axis</string>
                          </property>
@@ -1049,6 +1166,9 @@
                        </item>
                        <item>
                         <widget class="QRadioButton" name="fastSAHButton">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--kdt 4&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
                          <property name="text">
                           <string>Fast SAH approx.</string>
                          </property>
@@ -1328,6 +1448,9 @@
                    </property>
                    <item row="3" column="2">
                     <widget class="QLineEdit" name="assetsEdit">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;&amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;&amp;lt;dir_path&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="placeholderText">
                       <string>default: ./assets/</string>
                      </property>
@@ -1335,6 +1458,9 @@
                    </item>
                    <item row="4" column="1">
                     <widget class="QCheckBox" name="outputCheckbox">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--output &amp;lt;dir_path&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="text">
                       <string>Output path:</string>
                      </property>
@@ -1342,6 +1468,9 @@
                    </item>
                    <item row="4" column="2">
                     <widget class="QLineEdit" name="outputEdit">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;&amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;&amp;lt;dir_path&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="placeholderText">
                       <string>default: ./output/</string>
                      </property>
@@ -1359,6 +1488,9 @@
                    </item>
                    <item row="3" column="1">
                     <widget class="QCheckBox" name="assetsCheckbox">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--assets &amp;lt;dir_path&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="text">
                       <string>Assets path:</string>
                      </property>
@@ -1398,10 +1530,17 @@
                      <number>0</number>
                     </property>
                     <item row="1" column="1">
-                     <widget class="QLineEdit" name="unzipInputEdit"/>
+                     <widget class="QLineEdit" name="unzipInputEdit">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;&amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;&amp;lt;input_path&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                     </widget>
                     </item>
                     <item row="2" column="0">
                      <widget class="QLabel" name="unzipOutputLabel">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;&amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;&amp;lt;output_path&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="text">
                        <string>Output file:</string>
                       </property>
@@ -1412,6 +1551,9 @@
                     </item>
                     <item row="1" column="0">
                      <widget class="QLabel" name="unzipInputLabel">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;&amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;&amp;lt;input_path&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="text">
                        <string>Input file:</string>
                       </property>
@@ -1422,6 +1564,9 @@
                     </item>
                     <item row="0" column="0">
                      <widget class="QCheckBox" name="unzipCheckbox">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--unzip &amp;lt;input_path&amp;gt; &amp;lt;output_path&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="text">
                        <string>Decompress</string>
                       </property>
@@ -1438,7 +1583,11 @@
                      </widget>
                     </item>
                     <item row="2" column="1">
-                     <widget class="QLineEdit" name="unzipOutputEdit"/>
+                     <widget class="QLineEdit" name="unzipOutputEdit">
+                      <property name="toolTip">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;&amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;&amp;lt;output_path&amp;gt;&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
+                     </widget>
                     </item>
                     <item row="2" column="2">
                      <widget class="QPushButton" name="unzipOutputBrowseButton">
@@ -1538,6 +1687,9 @@
           </property>
           <item>
            <widget class="QCheckBox" name="liveTrajectoryPlotCheckbox">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--livetrajectoryplot&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>Live trajectory plotting</string>
             </property>
@@ -1545,6 +1697,9 @@
           </item>
           <item>
            <widget class="QCheckBox" name="polyscopeCheckbox">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--polyscope&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>Polyscope</string>
             </property>
@@ -1552,6 +1707,9 @@
           </item>
           <item>
            <widget class="QCheckBox" name="open3dCheckbox">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Option: &amp;quot;&lt;span style=&quot; font-style:italic;&quot;&gt;--open3d&lt;/span&gt;&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>Open3D live plotting</string>
             </property>
