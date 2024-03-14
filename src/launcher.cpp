@@ -1140,7 +1140,11 @@ void Launcher::updateCmd()
     _ui->cmdBrowser->insertPlainText(_ui->surveyPathLineEdit->text());
     if (!_ui->sourceGuiButton->isChecked() && _ui->sourceArgEditorButton->isChecked())
     {
-        _ui->cmdBrowser->insertPlainText(" " + _ui->argsEditor->toPlainText().replace(QStringLiteral("\n"), QStringLiteral(" ")));
+        if (!_ui->argsEditor->toPlainText().isEmpty())
+        {
+            _ui->cmdBrowser->insertPlainText(QStringLiteral(" "));
+        }
+        _ui->cmdBrowser->insertPlainText(_ui->argsEditor->toPlainText().replace(QStringLiteral("\n"), QStringLiteral(" ")));
     }
     else if (_ui->sourceGuiButton->isChecked() && !_ui->sourceArgEditorButton->isChecked())
     {
