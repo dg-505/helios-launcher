@@ -18,13 +18,13 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
       _outputDir(_settings->value(QStringLiteral("DIRS/HeliosBaseDir")).toString() + "/output")
 {
     _ui->setupUi(this);
-    this->setWindowIcon(QIcon(":/heliospp.png"));
+    this->setWindowIcon(QIcon(QStringLiteral(":/heliospp.png")));
     this->setWindowTitle("HELIOS++ launcher version " + QString::fromStdString(version));
     _ui->settingsWidget->layout()->setAlignment(Qt::AlignTop);
     _ui->optionsTabs->setCurrentIndex(_settings->value(QStringLiteral("MISC/CurrentTab")).toInt());
 #ifdef _WIN32
-    _ui->assetsEdit->setPlaceholderText(_ui->assetsEdit->placeholderText().replace("/", "\\"));
-    _ui->outputEdit->setPlaceholderText(_ui->outputEdit->placeholderText().replace("/", "\\"));
+    _ui->assetsEdit->setPlaceholderText(_ui->assetsEdit->placeholderText().replace(QStringLiteral("/"), QStringLiteral("\\")));
+    _ui->outputEdit->setPlaceholderText(_ui->outputEdit->placeholderText().replace(QStringLiteral("/"), QStringLiteral("\\")));
 #endif
 
     // Some options are only available in default mode, not in helios.py mode (according to the "--help" outputs of both)
@@ -59,8 +59,8 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     _ui->heliosBaseDirLineEdit->setText(_settings->value(QStringLiteral("DIRS/HeliosBaseDir")).toString());
     _ui->surveyPathLineEdit->setText(_settings->value(QStringLiteral("DIRS/LastSurvey")).toString());
 #ifdef _WIN32
-    _ui->heliosBaseDirLineEdit->setText(_ui->heliosBaseDirLineEdit->text().replace("/", "\\"));
-    _ui->surveyPathLineEdit->setText(_ui->surveyPathLineEdit->text().replace("/", "\\"));
+    _ui->heliosBaseDirLineEdit->setText(_ui->heliosBaseDirLineEdit->text().replace(QStringLiteral("/"), QStringLiteral("\\")));
+    _ui->surveyPathLineEdit->setText(_ui->surveyPathLineEdit->text().replace(QStringLiteral("/"), QStringLiteral("\\")));
 #endif
     _ui->defaultModeButton->setChecked(_settings->value(QStringLiteral("MISC/ExecMode")).toString() == QStringLiteral("default"));
     _ui->heliospyModeButton->setChecked(_settings->value(QStringLiteral("MISC/ExecMode")).toString() == QStringLiteral("helios.py"));
@@ -231,8 +231,8 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     _ui->unzipInputEdit->setText(_settings->value(QStringLiteral("ARGS/UnzipInput")).toString());
     _ui->unzipOutputEdit->setText(_settings->value(QStringLiteral("ARGS/UnzipOutput")).toString());
 #ifdef _WIN32
-    _ui->unzipInputEdit->setText(_ui->unzipInputEdit->text().replace("/", "\\"));
-    _ui->unzipOutputEdit->setText(_ui->unzipOutputEdit->text().replace("/", "\\"));
+    _ui->unzipInputEdit->setText(_ui->unzipInputEdit->text().replace(QStringLiteral("/"), QStringLiteral("\\")));
+    _ui->unzipOutputEdit->setText(_ui->unzipOutputEdit->text().replace(QStringLiteral("/"), QStringLiteral("\\")));
 #endif
     _ui->assetsCheckbox->setChecked(_settings->value(QStringLiteral("ARGS/AssetsPathFlag")).toBool());
     _ui->assetsEdit->setText(_settings->value(QStringLiteral("ARGS/AssetsPath")).toString());
@@ -507,7 +507,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     QObject::connect(_ui->unzipInputEdit, &QLineEdit::textChanged, this, [this]()
                     {
 #ifdef _WIN32
-                        _ui->unzipInputEdit->setText(_ui->unzipInputEdit->text().replace("/", "\\"));
+                        _ui->unzipInputEdit->setText(_ui->unzipInputEdit->text().replace(QStringLiteral("/"), QStringLiteral("\\")));
 #endif
                         if (_ui->unzipInputEdit->text().startsWith(_ui->heliosBaseDirLineEdit->text()))
                         {
@@ -519,7 +519,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     QObject::connect(_ui->unzipOutputEdit, &QLineEdit::textChanged, this, [this]()
                     {
 #ifdef _WIN32
-                        _ui->unzipOutputEdit->setText(_ui->unzipOutputEdit->text().replace("/", "\\"));
+                        _ui->unzipOutputEdit->setText(_ui->unzipOutputEdit->text().replace(QStringLiteral("/"), QStringLiteral("\\")));
 #endif
                         if (_ui->unzipOutputEdit->text().startsWith(_ui->heliosBaseDirLineEdit->text()))
                         {
@@ -536,7 +536,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     QObject::connect(_ui->assetsEdit, &QLineEdit::textChanged, this, [this]()
                     {
 #ifdef _WIN32
-                        _ui->assetsEdit->setText(_ui->assetsEdit->text().replace("/", "\\"));
+                        _ui->assetsEdit->setText(_ui->assetsEdit->text().replace(QStringLiteral("/"), QStringLiteral("\\")));
 #endif
                         if (_ui->assetsEdit->text().startsWith(_ui->heliosBaseDirLineEdit->text()))
                         {
@@ -553,7 +553,7 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
     QObject::connect(_ui->outputEdit, &QLineEdit::textChanged, this, [this]()
                     {
 #ifdef _WIN32
-                        _ui->outputEdit->setText(_ui->outputEdit->text().replace("/", "\\"));
+                        _ui->outputEdit->setText(_ui->outputEdit->text().replace(QStringLiteral("/"), QStringLiteral("\\")));
 #endif
                         if (_ui->outputEdit->text().startsWith(_ui->heliosBaseDirLineEdit->text()))
                         {
@@ -761,11 +761,11 @@ Launcher::Launcher(const std::string& version, QSettings* settings, QWidget* par
 #ifdef _WIN32
                         if (_ui->defaultModeButton->isChecked() && !_ui->heliospyModeButton->isChecked())
                         {
-                            _process.start(_process.workingDirectory() + "/run/helios.exe", QStringList() << "--help");
+                            _process.start(_process.workingDirectory() + "/run/helios.exe", QStringList() << QStringLiteral("--help"));
                         }
                         else if (!_ui->defaultModeButton->isChecked() && _ui->heliospyModeButton->isChecked())
                         {
-                            _process.start("python", QStringList() << _process.workingDirectory() + "/run/helios.py" << "--help");
+                            _process.start(QStringLiteral("python"), QStringList() << _process.workingDirectory() + "/run/helios.py" << QStringLiteral("--help"));
                         }
                         else
                         {
@@ -910,7 +910,7 @@ Launcher::~Launcher()
 void Launcher::writeHeliosBaseDirToSettings()
 {
 #ifdef _WIN32
-    _ui->heliosBaseDirLineEdit->setText(_ui->heliosBaseDirLineEdit->text().replace("/", "\\"));
+    _ui->heliosBaseDirLineEdit->setText(_ui->heliosBaseDirLineEdit->text().replace(QStringLiteral("/"), QStringLiteral("\\")));
 #endif
     _settings->setValue(QStringLiteral("DIRS/HeliosBaseDir"), _ui->heliosBaseDirLineEdit->text());
     _process.setWorkingDirectory(_ui->heliosBaseDirLineEdit->text());
@@ -919,7 +919,7 @@ void Launcher::writeHeliosBaseDirToSettings()
 void Launcher::writeLastSurveyToSettings()
 {
 #ifdef _WIN32
-    _ui->surveyPathLineEdit->setText(_ui->surveyPathLineEdit->text().replace("/", "\\"));
+    _ui->surveyPathLineEdit->setText(_ui->surveyPathLineEdit->text().replace(QStringLiteral("/"), QStringLiteral("\\")));
 #endif
     // when survey.xml is within helios base directory, use relative path
     if (_ui->surveyPathLineEdit->text().startsWith(_ui->heliosBaseDirLineEdit->text()) && _ui->heliosBaseDirLineEdit->text() != QLatin1String("") && QDir(_ui->heliosBaseDirLineEdit->text()).exists())
@@ -1093,14 +1093,14 @@ void Launcher::updateCmd()
     _ui->cmdBrowser->clear();
 #ifdef _WIN32
     _ui->cmdBrowser->moveCursor(QTextCursor::End);
-    _ui->cmdBrowser->insertPlainText(_ui->heliosBaseDirLineEdit->text().replace("/", "\\") + ">");
+    _ui->cmdBrowser->insertPlainText(_ui->heliosBaseDirLineEdit->text().replace(QStringLiteral("/"), QStringLiteral("\\")) + ">");
     if (_ui->defaultModeButton->isChecked() && !_ui->heliospyModeButton->isChecked())
     {
-        _ui->cmdBrowser->insertPlainText("run\\helios");
+        _ui->cmdBrowser->insertPlainText(QStringLiteral("run\\helios"));
     }
     else if (!_ui->defaultModeButton->isChecked() && _ui->heliospyModeButton->isChecked())
     {
-        _ui->cmdBrowser->insertPlainText("python run\\helios.py");
+        _ui->cmdBrowser->insertPlainText(QStringLiteral("python run\\helios.py"));
     }
 #else
     QTextCharFormat fmt;
@@ -1321,13 +1321,13 @@ void Launcher::startHeliospp()
     QString exec;
     auto execMode = _settings->value(QStringLiteral("MISC/ExecMode")).toString();
 #ifdef _WIN32
-    if (execMode == "default")
+    if (execMode == QStringLiteral("default"))
     {
-        exec = "run\\helios.exe";
+        exec = QStringLiteral("run\\helios.exe");
     }
-    else if (execMode == "helios.py")
+    else if (execMode == QStringLiteral("helios.py"))
     {
-        exec = "python run\\helios.py";
+        exec = QStringLiteral("python run\\helios.py");
     }
 #else
     if (execMode == QStringLiteral("default"))
@@ -1340,7 +1340,7 @@ void Launcher::startHeliospp()
     }
 #endif
     // Read arguments from cmdBrowser
-    auto options = cmd.mid(cmd.indexOf(exec) + exec.length()).split(QRegExp("[\\s\n]+"));
+    auto options = cmd.mid(cmd.indexOf(exec) + exec.length()).split(QRegExp(QStringLiteral("[\\s\n]+")));
     options.removeAll(QLatin1String(""));
 
     // clear output
@@ -1373,7 +1373,7 @@ void Launcher::startHeliospp()
     }
     else if (!_ui->defaultModeButton->isChecked() && _ui->heliospyModeButton->isChecked())
     {
-        _process.start("python", QStringList() << _process.workingDirectory() + "/run/helios.py" << options);
+        _process.start(QStringLiteral("python"), QStringList() << _process.workingDirectory() + "/run/helios.py" << options);
     }
     else
     {
@@ -1462,7 +1462,7 @@ void Launcher::exitHeliospp()
                 if (line.startsWith(QStringLiteral("Output directory: \"output/")))
                 {
 #ifdef _WIN32
-                    relOutDir = line.split("/\\").at(1).left(line.split("/\\").at(1).length() - 1);
+                    relOutDir = line.split(QStringLiteral("/\\")).at(1).left(line.split(QStringLiteral("/\\")).at(1).length() - 1);
 #else
                     relOutDir = line.split(QStringLiteral("//")).at(1).left(line.split(QStringLiteral("//")).at(1).length() - 1);
 #endif
