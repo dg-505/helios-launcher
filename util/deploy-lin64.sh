@@ -28,7 +28,7 @@ if [ -t 0 ]; then
     # Define root directories for each file type
     DebianRoot=../../deploy/debian/helios-launcher
     AppImageRoot=../../deploy/AppImage
-    ArchiveRoot=../../deploy/helios-launcher-v0.1.0-lin64-portable
+    ArchiveRoot=../../deploy/helios-launcher-v${version}-lin64-portable
 
     # executable binary
     echo -n "Copy helios-launcher executable..."
