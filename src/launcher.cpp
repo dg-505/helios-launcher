@@ -1096,7 +1096,7 @@ void Launcher::updateCmd()
     _ui->cmdBrowser->insertPlainText(_ui->heliosBaseDirLineEdit->text().replace(QStringLiteral("/"), QStringLiteral("\\")) + ">");
     if (_ui->defaultModeButton->isChecked() && !_ui->heliospyModeButton->isChecked())
     {
-        _ui->cmdBrowser->insertPlainText(QStringLiteral("run\\helios"));
+        _ui->cmdBrowser->insertPlainText(QStringLiteral("run\\helios.exe"));
     }
     else if (!_ui->defaultModeButton->isChecked() && _ui->heliospyModeButton->isChecked())
     {
