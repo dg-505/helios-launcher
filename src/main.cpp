@@ -93,7 +93,7 @@ auto main(int argc, char* argv[]) -> int
     }
 
     std::string version;
-    version = "0.1.0";
+    version = "0.2.0";
     Launcher launcher(version, &settings);
     launcher.show();
     return QApplication::exec();

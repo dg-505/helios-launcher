@@ -1,6 +1,6 @@
 #define Name "helios-launcher"
 #define Alias "HELIOS++ launcher"
-#define Version "0.1.0"
+#define Version "0.2.0"
 #define ExeName "helios-launcher.exe"
 
 [Setup]
